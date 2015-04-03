@@ -18,6 +18,7 @@ public class S3_CombatStateController : MonoBehaviour {
         if( Input.GetButton( "Attack" ) && !slashing )
         {
             slashing = true;
+            swordAnimator.SetBool("slashing", slashing);
         }
 
         if( slashing )
@@ -27,9 +28,8 @@ public class S3_CombatStateController : MonoBehaviour {
             {
                 timer = 0f;
                 slashing = false;
+                swordAnimator.SetBool( "slashing", slashing );
             }
-        }
-
-        swordAnimator.SetBool( "slashing", slashing );
+        }  
 	}
 }
