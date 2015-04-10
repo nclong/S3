@@ -8,14 +8,16 @@ public class S3_CombatStateController : MonoBehaviour {
     private bool slashing = false;
     private Animator swordAnimator;
     private float timer = 0f;
+    private S3_CharacterMovement characterMovement;
 	// Use this for initialization
 	void Start () {
         swordAnimator = SwordObj.GetComponent<Animator>();
+        characterMovement = GetComponent<S3_CharacterMovement>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        if( Input.GetButton( "Attack" ) && !slashing )
+        if( Input.GetButton( "Attack" ) && !slashing && !characterMovement.dashing)
         {
             slashing = true;
             swordAnimator.SetBool("slashing", slashing);

@@ -12,7 +12,7 @@ public class S3_CharacterMovement : MonoBehaviour {
     private Rigidbody2D rb2D;
     private bool dashPressed = false;
     private bool dashReleased = true;
-    private bool dashing = false;
+    public bool dashing = false;
     private Vector2 dashDirection;
 	// Use this for initialization
 	void Start () {

@@ -385,6 +385,7 @@ MonoBehaviour:
   dashTime: .25
   dashSpeed: 45
   dashCooldown: .5
+  dashing: 0
 --- !u!114 &506990892
 MonoBehaviour:
   m_ObjectHideFlags: 0
