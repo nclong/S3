@@ -33,6 +33,7 @@ public class S3_CharacterMovement : MonoBehaviour {
 
         if( dashPressed && dashReleased )
         {
+            S3_SoundManager.DashSound.Play();
             dashReleased = false;
             dashing = true;
             dashDirection = new Vector2( Input.GetAxis( "Horizontal" ), Input.GetAxis( "Vertical" ) ).normalized;

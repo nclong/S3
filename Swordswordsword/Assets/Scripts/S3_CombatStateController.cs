@@ -21,6 +21,7 @@ public class S3_CombatStateController : MonoBehaviour {
         {
             slashing = true;
             swordAnimator.SetBool("slashing", slashing);
+            S3_SoundManager.SlashSound.Play();
         }
 
         if( slashing )
