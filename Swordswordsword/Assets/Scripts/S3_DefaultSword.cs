@@ -22,8 +22,8 @@ public class S3_DefaultSword : MonoBehaviour {
         {
             player.TakeDamage(Damage);
             GameObject bloodEmitter = player.GetBloodEmittier();
-            Vector3 PlayerToSword = collisionObject.transform.position - transform.position;
-            float bloodSplatAngle = Mathf.Atan2(PlayerToSword.y, PlayerToSword.x) * Mathf.Rad2Deg - 180;
+            Vector3 PlayerToSword = collisionObject.transform.position - transform.parent.position;
+            float bloodSplatAngle = Mathf.Atan2(PlayerToSword.y, PlayerToSword.x) * Mathf.Rad2Deg - 180f;
             bloodEmitter.transform.eulerAngles = new Vector3(bloodSplatAngle, bloodEmitter.transform.eulerAngles.y, bloodEmitter.transform.eulerAngles.z);
             ParticleSystem bloodParticles = bloodEmitter.GetComponent<ParticleSystem>();
             bloodParticles.Play();
