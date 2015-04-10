@@ -34,4 +34,9 @@ public class S3_CombatStateController : MonoBehaviour {
             }
         }  
 	}
+
+    public GameObject GetSword()
+    {
+        return SwordObj;
+    }
 }

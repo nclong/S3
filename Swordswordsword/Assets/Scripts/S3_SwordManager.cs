@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class S3_SwordManager : MonoBehaviour {
 
@@ -9,10 +10,16 @@ public class S3_SwordManager : MonoBehaviour {
     private int inactiveSword = 1;
     private bool switchPressed = false;
     private bool switchReleased = true;
+    private Dictionary<string, MonoBehaviour> swordDict;
 	// Use this for initialization
 	void Start () {
+
+        swordDict = new Dictionary<string, MonoBehaviour>();
+        swordDict["default"] = GetComponent<S3_DefaultSword>();
+        swordDict["dummy"] = GetComponent<S3_DummySword>();
+        swordDict["dummy"].enabled = false;
         swords = new MonoBehaviour[2];
-        swords[0] = GetComponent<S3_CharacterMovement>();
+        swords[0] = swordDict["default"];
         swords[1] = null;
 	}
 	
@@ -30,6 +37,7 @@ public class S3_SwordManager : MonoBehaviour {
 
         if( switchPressed && switchReleased)
         {
+            switchReleased = false;
             if( currentSword == 0 && swords[1] != null)
             {
                 currentSword = 1;
@@ -49,4 +57,14 @@ public class S3_SwordManager : MonoBehaviour {
         }
 	
 	}
+
+    public void SetSword(string newSword)
+    {
+        swords[1] = swordDict[newSword];
+        currentSword = 1;
+        inactiveSword = 0;
+
+        swords[currentSword].enabled = true;
+        swords[inactiveSword].enabled = false;
+    }
 }
