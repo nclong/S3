@@ -23,7 +23,7 @@ public class S3_CombatStateController : MonoBehaviour {
             swordAnimator.SetBool("slashing", slashing);
             S3_SoundManager.SlashSound.Play();
         }
-
+        
         if( slashing )
         {
             timer += Time.deltaTime;

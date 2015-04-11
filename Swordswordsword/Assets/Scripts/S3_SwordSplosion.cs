@@ -6,6 +6,7 @@ public class S3_SwordSplosion : MonoBehaviour
 
     public int uses = 3;        //number of times it can be used before it disappears (like ammo)
     public int Damage;
+    public float rarity = 2 / 3;
     public float stunDura;      //stun duration
     public float pushBack;      //distance that player(s) are pushed back by. Will user be pushed back too?
 
@@ -44,7 +45,7 @@ public class S3_SwordSplosion : MonoBehaviour
         //obviously does not fire when out of ammo/uses
         if (uses > 0)
         {
-            //cause an explosion
+            //cause an explosion (spawn it)
             uses--; //costs one use per swing
         }
     }

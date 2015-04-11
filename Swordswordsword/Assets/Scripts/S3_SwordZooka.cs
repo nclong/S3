@@ -5,6 +5,7 @@ public class S3_SwordZooka : MonoBehaviour
 {
 
     public int uses = 5;        //number of times it can be used before it disappears (like ammo)
+    public float rarity = 2;
     public int Damage;
 
     // Use this for initialization

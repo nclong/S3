@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class S3_SpawnBullet : MonoBehaviour {
+public class S3_BulletProperties : MonoBehaviour {
 
     public int shotDmg;
     public float velocity;

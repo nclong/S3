@@ -3,17 +3,9 @@ using System.Collections;
 
 public class S3_GunSword : MonoBehaviour {
     public int uses = 20;        //number of times it can be used before it disappears (like ammo)
+    public  float rarity = 4;
     public int Damage;
-
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+    public GameObject bulletProj;
 
     //shamelessly taken from defaultsword script - hoping it will be temporary
     void OnTriggerEnter2D(Collider2D collider)
@@ -39,6 +31,8 @@ public class S3_GunSword : MonoBehaviour {
         if (uses > 0)
         { 
             //fire bullet, make bullet pre-fab in it at the end of the sword
+            GameObject clone;
+            clone = Instantiate(bulletProj, transform.position, transform.rotation) as GameObject;
             uses--; //costs one bullet per swing
         }
     }

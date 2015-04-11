@@ -4,6 +4,7 @@ using System.Collections;
 public class S3_SwordLaser : MonoBehaviour {
 
     public int uses = 10;        //number of times it can be used before it disappears (like ammo)
+    public float rarity = 5;
     public int Damage;
 
     // Use this for initialization

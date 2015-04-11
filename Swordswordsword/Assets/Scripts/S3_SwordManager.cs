@@ -11,6 +11,7 @@ public class S3_SwordManager : MonoBehaviour {
     private bool switchPressed = false;
     private bool switchReleased = true;
     private Dictionary<string, MonoBehaviour> swordDict;
+    private S3_GunSword gunSword;
 	// Use this for initialization
 	void Start () {
 
