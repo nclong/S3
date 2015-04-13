@@ -25,14 +25,15 @@ public class S3_GunSword : MonoBehaviour {
     }
 
     //called when GunSword is swung
-    void FireBullet()
+    public void FireBullet()
     {
         //obviously does not fire when out of ammo/uses
         if (uses > 0)
         { 
             //fire bullet, make bullet pre-fab in it at the end of the sword
             GameObject clone;
-            clone = Instantiate(bulletProj, transform.position, transform.rotation) as GameObject;
+            clone = Instantiate(bulletProj, transform.position, transform.parent.rotation) as GameObject;
+            clone.GetComponent<S3_BulletProperties>().direction = Camera.main.ScreenToWorldPoint( Input.mousePosition ) - clone.transform.position;
             uses--; //costs one bullet per swing
         }
     }
