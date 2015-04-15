@@ -38,6 +38,7 @@ public class S3_RocketProperties : MonoBehaviour
         
         if( (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Wall") && collision.gameObject != player )
         {
+            S3_SoundManager.RocketLand.Play();
             rb2D.velocity = Vector2.zero;
             Explosion.SetActive( true );
             GetComponent<Renderer>().enabled = false;

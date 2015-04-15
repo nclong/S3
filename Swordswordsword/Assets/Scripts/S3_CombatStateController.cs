@@ -28,7 +28,15 @@ public class S3_CombatStateController : MonoBehaviour {
         if( Input.GetButton( "Attack" ) && !info.IsName("ShoulderSlash") && !characterMovement.dashing )
         {
             swordAnimator.SetBool("slashing", true);
-            S3_SoundManager.SlashSound.Play();
+            S3_SwordLaser laser = SwordObj.GetComponent<S3_SwordLaser>();
+            if( laser != null && laser.enabled )
+            {
+                S3_SoundManager.LaserSound.Play();
+            }
+            else
+            {
+                S3_SoundManager.SlashSound.Play();
+            }
 
             S3_GunSword gun = SwordObj.GetComponent<S3_GunSword>();
             if( gun != null && gun.enabled )

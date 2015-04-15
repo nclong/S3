@@ -21,6 +21,7 @@ public class S3_GunSword : MonoBehaviour {
             bloodEmitter.transform.eulerAngles = new Vector3(bloodSplatAngle, bloodEmitter.transform.eulerAngles.y, bloodEmitter.transform.eulerAngles.z);
             ParticleSystem bloodParticles = bloodEmitter.GetComponent<ParticleSystem>();
             bloodParticles.Play();
+            S3_SoundManager.SlashHitSound.Play();
         }
     }
 
@@ -29,7 +30,8 @@ public class S3_GunSword : MonoBehaviour {
     {
         //obviously does not fire when out of ammo/uses
         if (uses > 0)
-        { 
+        {
+            S3_SoundManager.GunshotSound.Play();
             //fire bullet, make bullet pre-fab in it at the end of the sword
             GameObject clone;
             clone = Instantiate(bulletProj, transform.position, transform.parent.rotation) as GameObject;

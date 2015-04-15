@@ -35,6 +35,7 @@ public class S3_SwordZooka : MonoBehaviour
             bloodEmitter.transform.eulerAngles = new Vector3(bloodSplatAngle, bloodEmitter.transform.eulerAngles.y, bloodEmitter.transform.eulerAngles.z);
             ParticleSystem bloodParticles = bloodEmitter.GetComponent<ParticleSystem>();
             bloodParticles.Play();
+            S3_SoundManager.SlashHitSound.Play();
         }
     }
 
@@ -44,6 +45,7 @@ public class S3_SwordZooka : MonoBehaviour
         //obviously does not fire when out of ammo/uses
         if (uses > 0)
         {
+            S3_SoundManager.RocketLaunch.Play();
             GameObject clone = Instantiate<GameObject>( RocketObject );
             clone.transform.position = transform.position;
             clone.transform.rotation = transform.parent.parent.parent.parent.rotation;

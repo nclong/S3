@@ -33,6 +33,7 @@ public class S3_SwordLaser : MonoBehaviour {
             bloodEmitter.transform.eulerAngles = new Vector3(bloodSplatAngle, bloodEmitter.transform.eulerAngles.y, bloodEmitter.transform.eulerAngles.z);
             ParticleSystem bloodParticles = bloodEmitter.GetComponent<ParticleSystem>();
             bloodParticles.Play();
+            S3_SoundManager.SlashHitSound.Play();
         }
     }
 
