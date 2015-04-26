@@ -1,0 +1,11 @@
+c:\users\todandict\documents\visual studio 2013\Projects\S3server\S3server\bin\Debug\S3server.exe.config
+c:\users\todandict\documents\visual studio 2013\Projects\S3server\S3server\obj\Debug\S3server.csprojResolveAssemblyReference.cache
+c:\users\todandict\documents\visual studio 2013\Projects\S3server\S3server\obj\Debug\S3server.Properties.Resources.resources
+c:\users\todandict\documents\visual studio 2013\Projects\S3server\S3server\obj\Debug\S3server.csproj.GenerateResource.Cache
+c:\users\todandict\documents\visual studio 2013\Projects\S3server\S3server\bin\Debug\S3server.exe
+c:\users\todandict\documents\visual studio 2013\Projects\S3server\S3server\bin\Debug\S3server.pdb
+c:\users\todandict\documents\visual studio 2013\Projects\S3server\S3server\obj\Debug\S3server.exe
+c:\users\todandict\documents\visual studio 2013\Projects\S3server\S3server\obj\Debug\S3server.pdb
+C:\Users\Todandict\Desktop\S3\S3server\S3server\bin\Debug\S3server.exe.config
+C:\Users\Todandict\Desktop\S3\S3server\S3server\obj\Debug\S3server.exe
+C:\Users\Todandict\Desktop\S3\S3server\S3server\obj\Debug\S3server.pdb
