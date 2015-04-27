@@ -17,6 +17,10 @@ public class StateObject
     public byte[] buffer = new byte[BufferSize];
     // Received data string.
     public StringBuilder sb = new StringBuilder();
+
+    //need to separate this into something else like an inheiritance class
+    public S3DataResponse dataResponse;
+
 }
 
 public class S3_MasterServerClient
@@ -27,28 +31,26 @@ public class S3_MasterServerClient
     // ManualResetEvent instances signal completion.
     private static ManualResetEvent connectDone =
         new ManualResetEvent( false );
-    private static ManualResetEvent sendDone =
-        new ManualResetEvent( false );
+
     private static ManualResetEvent receiveDone =
-        new ManualResetEvent( false );
+        new ManualResetEvent(false);
 
     // The response from the remote device.
-    private static String response = String.Empty;
-    private static S3DataResponse dataResponse;
+    private String response = String.Empty;
 
     // Create a TCP/IP socket.
-    private static Socket client = new Socket( AddressFamily.InterNetwork,
-        SocketType.Stream, ProtocolType.Tcp );
+    private Socket client;
 
-    public static string GetResponse()
+    public string GetResponse()
     {
         return response;
     }
-    public static void StartClient(string hostIp)
+    public void StartClient(string hostIp)
     {
         // Connect to a remote device.
         try
         {
+            client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             // Establish the remote endpoint for the socket.
             // The name of the 
             // remote device is "host.contoso.com".
@@ -87,22 +89,24 @@ public class S3_MasterServerClient
         }
     }
 
-    public static S3DataResponse AttemptLoginOrRegister(S3DataRequet request)
+    public S3DataResponse AttemptLoginOrRegister(S3DataRequet request)
     {
+        StateObject sb;
         JSONClass jRequest = new JSONClass();
         jRequest["UserName"] = request.UserName;
         jRequest["passwordHash"].AsInt = request.passwordHash;
         jRequest["type"] = request.type;
         Send( client, jRequest.ToString() );
-        sendDone.WaitOne();
 
-        Receive( client );
-        receiveDone.WaitOne();
+        Receive( client, out sb );
+        Debug.Log("Waiting for reply");
+        receiveDone.WaitOne(5000);
+        Debug.Log("Reply received");
 
-        return dataResponse;
+        return sb.dataResponse;
     }
 
-    public static void StopClient()
+    public void StopClient()
     {
         try
         {
@@ -136,14 +140,16 @@ public class S3_MasterServerClient
         }
     }
 
-    private static void Receive( Socket client )
+    private void Receive( Socket client, out StateObject so )
     {
+        so = null;
         try
         {
             // Create the state object.
             StateObject state = new StateObject();
             state.workSocket = client;
-
+            so = state;
+            
             // Begin receiving the data from the remote device.
             client.BeginReceive( state.buffer, 0, StateObject.BufferSize, 0,
                 new AsyncCallback( ReceiveCallback ), state );
@@ -169,33 +175,32 @@ public class S3_MasterServerClient
 
             if( bytesRead > 0 )
             {
+                
                 // There might be more data, so store the data received so far.
                 string readString = Encoding.ASCII.GetString( state.buffer, 0, bytesRead );
                 state.sb.Append( readString );
-                var s3Response = JSON.Parse( state.sb.ToString() );
-                if( s3Response["responseCode"] != null && s3Response["message"] != null)
+                Debug.Log("Receiving data: " + state.sb.ToString());
+                // Get the rest of the data.
+                client.BeginReceive( state.buffer, 0, StateObject.BufferSize, 0,
+                    new AsyncCallback( ReceiveCallback ), state );
+
+                receiveDone.Set();
+                string content = state.sb.ToString();
+                var s3Response = JSON.Parse(content);
+                if (s3Response["responseCode"] != null && s3Response["message"] != null)
                 {
-                    dataResponse = new S3DataResponse
+                    state.dataResponse = new S3DataResponse
                     {
                         responseCode = s3Response["responseCode"].AsInt,
                         message = s3Response["message"]
                     };
                 }
-                System.Threading.Thread.Sleep( 1000 );
-                receiveDone.Set();
-                // Get the rest of the data.
-                client.BeginReceive( state.buffer, bytesRead, StateObject.BufferSize, 0,
-                    new AsyncCallback( ReceiveCallback ), state );
             }
             else
             {
                 // All the data has arrived; put it in response.
-                if( state.sb.Length > 1 )
-                {
-                    response = state.sb.ToString();
-                }
-                // Signal that all bytes have been received.
-                receiveDone.Set();
+                Debug.Log("Finished receiving data");
+                
             }
         }
         catch( Exception e )
@@ -225,7 +230,6 @@ public class S3_MasterServerClient
             Debug.Log( "Sent " + bytesSent + " bytes to server." );
 
             // Signal that all bytes have been sent.
-            sendDone.Set();
         }
         catch( Exception e )
         {

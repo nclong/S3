@@ -22,7 +22,7 @@ public class StateObject
 public class AsynchronousSocketListener
 {
     // Thread signal.
-    public static ManualResetEvent allDone = new ManualResetEvent( false );
+    public static ManualResetEvent allDone = new ManualResetEvent(false);
     public static Dictionary<string, Socket> clients = new Dictionary<string, Socket>();
 
     public AsynchronousSocketListener()
@@ -35,56 +35,56 @@ public class AsynchronousSocketListener
         byte[] bytes = new Byte[1024];
 
         // Create a TCP/IP socket.
-        Socket listener = new Socket( AddressFamily.InterNetwork,
-            SocketType.Stream, ProtocolType.Tcp );
+        Socket listener = new Socket(AddressFamily.InterNetwork,
+            SocketType.Stream, ProtocolType.Tcp);
 
         //Listen to external IP address
-        IPHostEntry ipHostInfo = Dns.GetHostEntry( Dns.GetHostName() );
+        IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
         IPAddress ipAddress = ipHostInfo.AddressList[0];
-        IPEndPoint localEndPoint = new IPEndPoint( ipAddress, 11000 );
+        IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 11000);
 
         // Listen to any IP Address
-        IPEndPoint any = new IPEndPoint( IPAddress.Any, 11000 );
+        IPEndPoint any = new IPEndPoint(IPAddress.Any, 11000);
 
         // Bind the socket to the local endpoint and listen for incoming connections.
         try
         {
-            listener.Bind( any );
-            listener.Listen( 100 );
+            listener.Bind(any);
+            listener.Listen(100);
 
-            while( true )
+            while (true)
             {
                 // Set the event to nonsignaled state.
                 allDone.Reset();
 
                 // Start an asynchronous socket to listen for connections.
-                Console.WriteLine( "Waiting for a connection.." );
+                Console.WriteLine("Waiting for a connection..");
                 listener.BeginAccept(
-                    new AsyncCallback( AcceptCallback ),
-                    listener );
+                    new AsyncCallback(AcceptCallback),
+                    listener);
                 // Wait until a connection is made before continuing.
                 allDone.WaitOne();
             }
 
         }
-        catch( Exception e )
+        catch (Exception e)
         {
-            Console.WriteLine( e.ToString() );
+            Console.WriteLine(e.ToString());
         }
 
-        Console.WriteLine( "\nPress ENTER to continue..." );
+        Console.WriteLine("\nPress ENTER to continue...");
         Console.Read();
 
     }
 
-    public static void AcceptCallback( IAsyncResult ar )
+    public static void AcceptCallback(IAsyncResult ar)
     {
         // Signal the main thread to continue.
         allDone.Set();
 
         // Get the socket that handles the client request.
         Socket listener = (Socket)ar.AsyncState;
-        Socket handler = listener.EndAccept( ar );
+        Socket handler = listener.EndAccept(ar);
 
         // Create the state object.
         StateObject state = new StateObject();
@@ -94,11 +94,11 @@ public class AsynchronousSocketListener
         // So I need to store all clients sockets so I can send them messages later
         // TODO: store in meaningful way,such as Dictionary<string,Socket>
 
-        handler.BeginReceive( state.buffer, 0, StateObject.BufferSize, 0,
-            new AsyncCallback( ReadCallback ), state );
+        handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
+            new AsyncCallback(ReadCallback), state);
     }
 
-    public static void ReadCallback( IAsyncResult ar )
+    public static void ReadCallback(IAsyncResult ar)
     {
         String content = String.Empty;
 
@@ -108,25 +108,25 @@ public class AsynchronousSocketListener
         Socket handler = state.workSocket;
 
         // Read data from the client socket. 
-        int bytesRead = handler.EndReceive( ar );
+        int bytesRead = handler.EndReceive(ar);
 
-        if( bytesRead > 0 )
+        if (bytesRead > 0)
         {
             // There  might be more data, so store the data received so far.
-            state.sb.Append( Encoding.ASCII.GetString(
-                state.buffer, 0, bytesRead ) );
+            state.sb.Append(Encoding.ASCII.GetString(
+                state.buffer, 0, bytesRead));
 
             // Check for end-of-file tag. If it is not there, read 
             // more data.
             content = state.sb.ToString();
-            S3DataRequest requestContent = JsonConvert.DeserializeObject<S3DataRequest>( content );
+            S3DataRequest requestContent = JsonConvert.DeserializeObject<S3DataRequest>(content);
             // All the data has been read from the 
             // client. Display it on the console.
-            Console.WriteLine( "Read {0} bytes from socket. \n Data : {1}",
-                content.Length, content );
-            Console.WriteLine( "\n\n" );
+            Console.WriteLine("Read {0} bytes from socket. \n Data : {1}",
+                content.Length, content);
+            Console.WriteLine("\n\n");
 
-            Send( handler, JsonConvert.SerializeObject( HandleDataRequest( requestContent ) ) );
+            Send(handler, JsonConvert.SerializeObject(HandleDataRequest(requestContent)));
 
 
             // Setup a new state object
@@ -134,20 +134,20 @@ public class AsynchronousSocketListener
             newstate.workSocket = handler;
 
             // Call BeginReceive with a new state object
-            handler.BeginReceive( newstate.buffer, 0, StateObject.BufferSize, 0,
-            new AsyncCallback( ReadCallback ), newstate );
+            handler.BeginReceive(newstate.buffer, 0, StateObject.BufferSize, 0,
+            new AsyncCallback(ReadCallback), newstate);
         }
     }
 
-    private static S3DataResponse HandleDataRequest( S3DataRequest request)
+    private static S3DataResponse HandleDataRequest(S3DataRequest request)
     {
-        if( request.type == "Login")
+        if (request.type == "Login")
         {
-            return AccountManager.RequestLogin( request );
+            return AccountManager.RequestLogin(request);
         }
-        else if ( request.type == "Register" )
+        else if (request.type == "Register")
         {
-            return AccountManager.RequestRegister( request );
+            return AccountManager.RequestRegister(request);
         }
         return new S3DataResponse()
         {
@@ -156,18 +156,18 @@ public class AsynchronousSocketListener
         };
     }
 
-    private static void Send( Socket handler, String data )
+    private static void Send(Socket handler, String data)
     {
         // Convert the string data to byte data using ASCII encoding.
-        byte[] byteData = Encoding.ASCII.GetBytes( data );
-        Console.WriteLine( "Attempting to send {0} bytes", byteData.Length );
+        byte[] byteData = Encoding.ASCII.GetBytes(data);
+        Console.WriteLine("Attempting to send {0} bytes", byteData.Length);
 
         // Begin sending the data to the remote device.
-        handler.BeginSend( byteData, 0, byteData.Length, 0,
-            new AsyncCallback( SendCallback ), handler );
+        handler.BeginSend(byteData, 0, byteData.Length, 0,
+            new AsyncCallback(SendCallback), handler);
     }
 
-    private static void SendCallback( IAsyncResult ar )
+    private static void SendCallback(IAsyncResult ar)
     {
         try
         {
@@ -175,17 +175,17 @@ public class AsynchronousSocketListener
             Socket handler = (Socket)ar.AsyncState;
 
             // Complete sending the data to the remote device.
-            int bytesSent = handler.EndSend( ar );
-            Console.WriteLine( "Sent {0} bytes to client.", bytesSent );
+            int bytesSent = handler.EndSend(ar);
+            Console.WriteLine("Sent {0} bytes to client.", bytesSent);
         }
-        catch( Exception e )
+        catch (Exception e)
         {
-            Console.WriteLine( e.ToString() );
+            Console.WriteLine(e.ToString());
         }
     }
 
 
-    public static int Main( String[] args )
+    public static int Main(String[] args)
     {
         StartListening();
         return 0;

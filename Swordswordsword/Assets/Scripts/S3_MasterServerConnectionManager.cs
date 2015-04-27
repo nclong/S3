@@ -7,10 +7,11 @@ public class S3_MasterServerConnectionManager : MonoBehaviour {
     public Text StatusText;
     public InputField UserNameField;
     public InputField PasswordField;
+    public S3_MasterServerClient client = new S3_MasterServerClient(); 
 
 	// Use this for initialization
 	void Start () {
-        S3_MasterServerClient.StartClient(MasterServerIP);
+        client.StartClient(MasterServerIP);
 	}
 	
 	// Update is called once per frame
@@ -34,12 +35,12 @@ public class S3_MasterServerConnectionManager : MonoBehaviour {
             type = "Login"
         };
 
-        S3DataResponse response = S3_MasterServerClient.AttemptLoginOrRegister( request );
+        S3DataResponse response = client.AttemptLoginOrRegister(request);
         StatusText.text = response.message;
 
         if( response.responseCode == 1)
         {
-            S3_MasterServerClient.StopClient();
+            client.StopClient();
             Application.LoadLevel( "firstScene" );
         }
     }
@@ -61,7 +62,7 @@ public class S3_MasterServerConnectionManager : MonoBehaviour {
             type = "Register"
         };
 
-        S3DataResponse response = S3_MasterServerClient.AttemptLoginOrRegister( request );
+        S3DataResponse response = client.AttemptLoginOrRegister(request);
         StatusText.text = response.message;
     }
 }
