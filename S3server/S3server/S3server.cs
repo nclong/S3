@@ -17,6 +17,7 @@ namespace S3server
         [STAThread]
         public static void Main()
         {
+            AccountManager.TestDatabase();
             //setting up a tcp/ip server
             //step 1: create a listener, assign a port to it, start it
             TcpListener playerListener = new TcpListener(2545);
@@ -40,5 +41,7 @@ namespace S3server
 
 
         }
+
+
     }
 }
