@@ -9,3 +9,16 @@ c:\users\todandict\documents\visual studio 2013\Projects\S3server\S3server\obj\D
 C:\Users\Todandict\Desktop\S3\S3server\S3server\bin\Debug\S3server.exe.config
 C:\Users\Todandict\Desktop\S3\S3server\S3server\obj\Debug\S3server.exe
 C:\Users\Todandict\Desktop\S3\S3server\S3server\obj\Debug\S3server.pdb
+C:\Users\nickl_000\repositories\s3\S3server\S3server\bin\Debug\S3server.exe.config
+C:\Users\nickl_000\repositories\s3\S3server\S3server\obj\Debug\S3server.exe
+C:\Users\nickl_000\repositories\s3\S3server\S3server\obj\Debug\S3server.pdb
+C:\Users\nickl_000\repositories\s3\S3server\S3server\obj\Debug\S3server.csprojResolveAssemblyReference.cache
+C:\Users\nickl_000\repositories\s3\S3server\S3server\obj\Debug\S3server.Properties.Resources.resources
+C:\Users\nickl_000\repositories\s3\S3server\S3server\obj\Debug\S3server.csproj.GenerateResource.Cache
+C:\Users\nickl_000\repositories\s3\S3server\S3server\bin\Debug\S3server.exe
+C:\Users\nickl_000\repositories\s3\S3server\S3server\bin\Debug\S3server.pdb
+C:\Users\nickl_000\repositories\s3\S3server\S3server\bin\Debug\EntityFramework.dll
+C:\Users\nickl_000\repositories\s3\S3server\S3server\bin\Debug\EntityFramework.SqlServer.dll
+C:\Users\nickl_000\repositories\s3\S3server\S3server\bin\Debug\EntityFramework.xml
+C:\Users\nickl_000\repositories\s3\S3server\S3server\bin\Debug\EntityFramework.SqlServer.xml
+C:\Users\nickl_000\repositories\s3\S3server\S3server\bin\Debug\Newtonsoft.Json.xml

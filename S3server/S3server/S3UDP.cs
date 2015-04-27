@@ -1,157 +1,193 @@
 ﻿using System;
-using System.IO;
-using System.Text;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading;
-using System.Configuration;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-
-public class S3UDP
+// State object for reading client data asynchronously
+public class StateObject
 {
-    //to be implemented later
-    class Packet
+    // Client  socket.
+    public Socket workSocket = null;
+    // Size of receive buffer.
+    public const int BufferSize = 1024;
+    // Receive buffer.
+    public byte[] buffer = new byte[BufferSize];
+    // Received data string.
+    public StringBuilder sb = new StringBuilder();
+}
+
+public class AsynchronousSocketListener
+{
+    // Thread signal.
+    public static ManualResetEvent allDone = new ManualResetEvent( false );
+    public static Dictionary<string, Socket> clients = new Dictionary<string, Socket>();
+
+    public AsynchronousSocketListener()
     {
-        [JsonProperty]
-        public PacketType type;
-        //need a unique ID represented in bytes
-        [JsonProperty]
-        public byte ID;
-        [JsonProperty]
-        public string userName; 
-        /*float[] position;
-        float[] velocity;
-        int health;*/
     }
 
-    class HandShakePacket : Packet
-    {
-        [JsonProperty]
-        public int connectStatus;
-    }
-
-    //accept no more than 30 players in lobby, no more than 8 chars in userName
-    const int PLAYER_LIMIT = 30;
-    const int CHAR_LIMIT = 8;
-
-    //a concurrent list of players logged in
-    public static Dictionary<string,byte> players = new Dictionary<string,byte>();
-    
-    //[STAThread]
-    public static void RejectCallBack(/*IAsyncResult ar*/)
-    {
-        //sorry, can't get anymore players in
-    }
-
-    //Client Handler?
-    public static void StartClient()
-    {
-        //remember that UdpClient *is* a socket
-        UdpClient player = new UdpClient(3000);
-
-        /*byte[] gamePlayData = new byte[1024];
-        string name = "Teddy Tester";*/
-
-        try
-        {
-            //prepare player info to be sent to server
-            Packet p = new Packet();
-            //gamePlayData = Encoding.ASCII.GetBytes(name);
-            string playerData = JsonConvert.SerializeObject(p);
-            byte[] pdBytes = Encoding.ASCII.GetBytes(playerData);
-
-            //send info out
-            player.Send(pdBytes, pdBytes.Length);
-
-            //make an endpoint that is able to read anything the server sends
-            IPEndPoint ipRemoteEP = new IPEndPoint(IPAddress.Any, 0);
-
-            byte[] pdrBytes = player.Receive(ref ipRemoteEP);
-            string lobbyState = Encoding.ASCII.GetString(pdrBytes);
-
-            player.Close();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.ToString());
-        }
-    }
-
-    //Master Server
     public static void StartListening()
     {
-        //UdpClient is a socket type
-        UdpClient incPlayer = new UdpClient(2545);
-        IPEndPoint endPt = new IPEndPoint(IPAddress.Any, 2545);
-        byte[] gameData = new byte[1024];
+        // Data buffer for incoming data.
+        byte[] bytes = new Byte[1024];
 
-        IPEndPoint sender = new IPEndPoint(IPAddress.Any, 0);
+        // Create a TCP/IP socket.
+        Socket listener = new Socket( AddressFamily.InterNetwork,
+            SocketType.Stream, ProtocolType.Tcp );
 
-        //begin thread
-        Thread mainGame = new Thread(delegate()
+        //Listen to external IP address
+        IPHostEntry ipHostInfo = Dns.GetHostEntry( Dns.GetHostName() );
+        IPAddress ipAddress = ipHostInfo.AddressList[0];
+        IPEndPoint localEndPoint = new IPEndPoint( ipAddress, 11000 );
+
+        // Listen to any IP Address
+        IPEndPoint any = new IPEndPoint( IPAddress.Any, 11000 );
+
+        // Bind the socket to the local endpoint and listen for incoming connections.
+        try
         {
-            while (true)
+            listener.Bind( any );
+            listener.Listen( 100 );
+
+            while( true )
             {
-                //recieve game data from all players.
-                gameData = incPlayer.Receive(ref sender);
-                //check if player is trying to connect or not
+                // Set the event to nonsignaled state.
+                allDone.Reset();
 
-
-                //toss out excess data before translating bytes to string
-                //incPlayer.BeginReceive(new AsyncCallback(RejectCallBack), gameData);
-                
-
-                //give server time to break before sending another update
-                System.Threading.Thread.Sleep(1000);
-                Packet p = JsonConvert.DeserializeObject<Packet>(Encoding.ASCII.GetString(gameData, 0, gameData.Length));
-
-                //the master server will handle what type of packets it is recieving
-                if( p.type == PacketType.handShake)
-                {
-                    //create handshaker
-                    HandShakePacket hs = (HandShakePacket)p;
-                    //look ahead to see if adding another player to the game will exceed player limit
-                    if (players.Count + 1 > PLAYER_LIMIT)
-                    {
-                        //if so, reject the connection request
-                        RejectCallBack();
-                    }
-                    else
-                    { 
-                        //if not, add him/her in the lobby!
-                        players.Add(hs.userName, hs.ID);
-                    }
-                }
-                else if (p.type == PacketType.accountRegister)
-                { 
-                    //if userName does not exist, add in to database
-                }
-                else if (p.type == PacketType.accountLogin)
-                { 
-                    //if userName does exit, allow player to login to lobby
-                }
-
-                /*//resolve game state using game data (possiblly w/ database interaction)
-                string gdResolution; //does nothing at the moment, need database access*/
-
-                //assemble resolved game state into datagram
-                //byte[] gdBytes = Encoding.ASCII.GetBytes(gdString);
-
-                //send datagram to all players
-                incPlayer.Send(gameData, gameData.Length, sender);
+                // Start an asynchronous socket to listen for connections.
+                Console.WriteLine( "Waiting for a connection.." );
+                listener.BeginAccept(
+                    new AsyncCallback( AcceptCallback ),
+                    listener );
+                // Wait until a connection is made before continuing.
+                allDone.WaitOne();
             }
-          });
-        mainGame.Start();
+
+        }
+        catch( Exception e )
+        {
+            Console.WriteLine( e.ToString() );
+        }
+
+        Console.WriteLine( "\nPress ENTER to continue..." );
+        Console.Read();
 
     }
 
-    public static int Main()
+    public static void AcceptCallback( IAsyncResult ar )
     {
-        //using UDP methodology
+        // Signal the main thread to continue.
+        allDone.Set();
+
+        // Get the socket that handles the client request.
+        Socket listener = (Socket)ar.AsyncState;
+        Socket handler = listener.EndAccept( ar );
+
+        // Create the state object.
+        StateObject state = new StateObject();
+        state.workSocket = handler;
+
+        // Games have bidirectional communication (as opposed to request/response)
+        // So I need to store all clients sockets so I can send them messages later
+        // TODO: store in meaningful way,such as Dictionary<string,Socket>
+
+        handler.BeginReceive( state.buffer, 0, StateObject.BufferSize, 0,
+            new AsyncCallback( ReadCallback ), state );
+    }
+
+    public static void ReadCallback( IAsyncResult ar )
+    {
+        String content = String.Empty;
+
+        // Retrieve the state object and the handler socket
+        // from the asynchronous state object.
+        StateObject state = (StateObject)ar.AsyncState;
+        Socket handler = state.workSocket;
+
+        // Read data from the client socket. 
+        int bytesRead = handler.EndReceive( ar );
+
+        if( bytesRead > 0 )
+        {
+            // There  might be more data, so store the data received so far.
+            state.sb.Append( Encoding.ASCII.GetString(
+                state.buffer, 0, bytesRead ) );
+
+            // Check for end-of-file tag. If it is not there, read 
+            // more data.
+            content = state.sb.ToString();
+            S3DataRequest requestContent = JsonConvert.DeserializeObject<S3DataRequest>( content );
+            // All the data has been read from the 
+            // client. Display it on the console.
+            Console.WriteLine( "Read {0} bytes from socket. \n Data : {1}",
+                content.Length, content );
+            Console.WriteLine( "\n\n" );
+
+            Send( handler, JsonConvert.SerializeObject( HandleDataRequest( requestContent ) ) );
+
+
+            // Setup a new state object
+            StateObject newstate = new StateObject();
+            newstate.workSocket = handler;
+
+            // Call BeginReceive with a new state object
+            handler.BeginReceive( newstate.buffer, 0, StateObject.BufferSize, 0,
+            new AsyncCallback( ReadCallback ), newstate );
+        }
+    }
+
+    private static S3DataResponse HandleDataRequest( S3DataRequest request)
+    {
+        if( request.type == "Login")
+        {
+            return AccountManager.RequestLogin( request );
+        }
+        else if ( request.type == "Register" )
+        {
+            return AccountManager.RequestRegister( request );
+        }
+        return new S3DataResponse()
+        {
+            responseCode = -1,
+            message = "Invalid Data"
+        };
+    }
+
+    private static void Send( Socket handler, String data )
+    {
+        // Convert the string data to byte data using ASCII encoding.
+        byte[] byteData = Encoding.ASCII.GetBytes( data );
+        Console.WriteLine( "Attempting to send {0} bytes", byteData.Length );
+
+        // Begin sending the data to the remote device.
+        handler.BeginSend( byteData, 0, byteData.Length, 0,
+            new AsyncCallback( SendCallback ), handler );
+    }
+
+    private static void SendCallback( IAsyncResult ar )
+    {
+        try
+        {
+            // Retrieve the socket from the state object.
+            Socket handler = (Socket)ar.AsyncState;
+
+            // Complete sending the data to the remote device.
+            int bytesSent = handler.EndSend( ar );
+            Console.WriteLine( "Sent {0} bytes to client.", bytesSent );
+        }
+        catch( Exception e )
+        {
+            Console.WriteLine( e.ToString() );
+        }
+    }
+
+
+    public static int Main( String[] args )
+    {
         StartListening();
-        StartClient();
         return 0;
     }
 }
