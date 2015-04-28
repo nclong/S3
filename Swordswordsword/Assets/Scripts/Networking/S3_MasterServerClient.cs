@@ -35,16 +35,10 @@ public class S3_MasterServerClient
     private static ManualResetEvent receiveDone =
         new ManualResetEvent(false);
 
-    // The response from the remote device.
-    private String response = String.Empty;
-
     // Create a TCP/IP socket.
     private Socket client;
 
-    public string GetResponse()
-    {
-        return response;
-    }
+    
     public void StartClient(string hostIp)
     {
         // Connect to a remote device.
@@ -65,7 +59,7 @@ public class S3_MasterServerClient
                 new AsyncCallback( ConnectCallback ), client );
             connectDone.WaitOne();
 
-            response = "Connection created";
+            //response = "Connection created";
 
             // Send test data to the remote device.
             //Send( client, "This is a test<EOF>" );
@@ -103,6 +97,7 @@ public class S3_MasterServerClient
         receiveDone.WaitOne(5000);
         Debug.Log("Reply received");
 
+        Debug.Log(String.Format("SBDataResponse = {0}", sb.dataResponse.message));
         return sb.dataResponse;
     }
 
@@ -152,7 +147,7 @@ public class S3_MasterServerClient
             
             // Begin receiving the data from the remote device.
             client.BeginReceive( state.buffer, 0, StateObject.BufferSize, 0,
-                new AsyncCallback( ReceiveCallback ), state );
+                new AsyncCallback( ReceiveCallback ), so );
         }
         catch( Exception e )
         {
@@ -178,12 +173,15 @@ public class S3_MasterServerClient
                 
                 // There might be more data, so store the data received so far.
                 string readString = Encoding.ASCII.GetString( state.buffer, 0, bytesRead );
+
                 state.sb.Append( readString );
                 Debug.Log("Receiving data: " + state.sb.ToString());
                 // Get the rest of the data.
-                client.BeginReceive( state.buffer, 0, StateObject.BufferSize, 0,
-                    new AsyncCallback( ReceiveCallback ), state );
+                //this piece of code was causing problems with account management inconsistencies. this is our exercise from Arthur!
+                /*client.BeginReceive( state.buffer, 0, StateObject.BufferSize, 0,
+                    new AsyncCallback( ReceiveCallback ), state );*/
 
+                //this was moved from else to here
                 receiveDone.Set();
                 string content = state.sb.ToString();
                 var s3Response = JSON.Parse(content);
@@ -194,6 +192,12 @@ public class S3_MasterServerClient
                         responseCode = s3Response["responseCode"].AsInt,
                         message = s3Response["message"]
                     };
+
+                    Debug.Log(String.Format("s3Response = {0}", s3Response["message"]));
+                }
+                else
+                {
+                    Debug.Log("Failed to parse response!");
                 }
             }
             else
