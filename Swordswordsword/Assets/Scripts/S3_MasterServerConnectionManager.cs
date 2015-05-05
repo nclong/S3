@@ -12,7 +12,7 @@ public class S3_MasterServerConnectionManager : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         //we need to move this elsewhere. we want to start it as we try to login or register as many times as we want.
-        client.StartClient(MasterServerIP);
+        
 	}
 	
 	// Update is called once per frame
@@ -21,6 +21,7 @@ public class S3_MasterServerConnectionManager : MonoBehaviour {
 
     public void OnLogin()
     {
+        client.StartClient( MasterServerIP );
         string userName = UserNameField.text;
         string password = PasswordField.text;
         if( userName == string.Empty || password == string.Empty)
@@ -42,17 +43,20 @@ public class S3_MasterServerConnectionManager : MonoBehaviour {
         //whether we fail to login or not, we want to close the sockets on BOTH ends.
         if( response.responseCode == 1)
         {
-            client.StopClient();
+            
             Application.LoadLevel( "firstScene" );
         }
         else if (response.responseCode == -1)
         { 
             
         }
+
+        client.StopClient();
     }
 
     public void OnRegister()
     {
+        client.StartClient( MasterServerIP );
         string userName = UserNameField.text;
         string password = PasswordField.text;
         if( userName == string.Empty || password == string.Empty )
@@ -70,5 +74,7 @@ public class S3_MasterServerConnectionManager : MonoBehaviour {
 
         S3DataResponse response = client.AttemptLoginOrRegister(request);
         StatusText.text = response.message;
+
+        client.StopClient();
     }
 }

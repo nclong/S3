@@ -22,3 +22,16 @@ C:\Users\nickl_000\repositories\s3\S3server\S3server\bin\Debug\EntityFramework.S
 C:\Users\nickl_000\repositories\s3\S3server\S3server\bin\Debug\EntityFramework.xml
 C:\Users\nickl_000\repositories\s3\S3server\S3server\bin\Debug\EntityFramework.SqlServer.xml
 C:\Users\nickl_000\repositories\s3\S3server\S3server\bin\Debug\Newtonsoft.Json.xml
+C:\Users\VGDC_1\nclong\s3\S3server\S3server\bin\Debug\S3server.exe.config
+C:\Users\VGDC_1\nclong\s3\S3server\S3server\obj\Debug\S3server.exe
+C:\Users\VGDC_1\nclong\s3\S3server\S3server\obj\Debug\S3server.pdb
+C:\Users\VGDC_1\nclong\s3\S3server\S3server\bin\Debug\S3server.exe
+C:\Users\VGDC_1\nclong\s3\S3server\S3server\bin\Debug\S3server.pdb
+C:\Users\VGDC_1\nclong\s3\S3server\S3server\bin\Debug\EntityFramework.dll
+C:\Users\VGDC_1\nclong\s3\S3server\S3server\bin\Debug\EntityFramework.SqlServer.dll
+C:\Users\VGDC_1\nclong\s3\S3server\S3server\bin\Debug\EntityFramework.xml
+C:\Users\VGDC_1\nclong\s3\S3server\S3server\bin\Debug\EntityFramework.SqlServer.xml
+C:\Users\VGDC_1\nclong\s3\S3server\S3server\bin\Debug\Newtonsoft.Json.xml
+C:\Users\VGDC_1\nclong\s3\S3server\S3server\obj\Debug\S3server.csprojResolveAssemblyReference.cache
+C:\Users\VGDC_1\nclong\s3\S3server\S3server\obj\Debug\S3server.Properties.Resources.resources
+C:\Users\VGDC_1\nclong\s3\S3server\S3server\obj\Debug\S3server.csproj.GenerateResource.Cache

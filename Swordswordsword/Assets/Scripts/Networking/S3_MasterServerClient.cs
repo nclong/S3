@@ -18,9 +18,6 @@ public class StateObject
     // Received data string.
     public StringBuilder sb = new StringBuilder();
 
-    //need to separate this into something else like an inheiritance class
-    public S3DataResponse dataResponse;
-
 }
 
 public class S3_MasterServerClient
@@ -37,6 +34,8 @@ public class S3_MasterServerClient
 
     // Create a TCP/IP socket.
     private Socket client;
+
+    private static S3DataResponse DataResponse;
 
     
     public void StartClient(string hostIp)
@@ -57,7 +56,7 @@ public class S3_MasterServerClient
             // Connect to the remote endpoint.
             client.BeginConnect( remoteEP,
                 new AsyncCallback( ConnectCallback ), client );
-            connectDone.WaitOne();
+            connectDone.WaitOne( 15000 );
 
             //response = "Connection created";
 
@@ -92,13 +91,13 @@ public class S3_MasterServerClient
         jRequest["type"] = request.type;
         Send( client, jRequest.ToString() );
 
-        Receive( client, out sb );
+        Receive( client);
         Debug.Log("Waiting for reply");
-        receiveDone.WaitOne(5000);
+        receiveDone.WaitOne(15000);
         Debug.Log("Reply received");
 
-        Debug.Log(String.Format("SBDataResponse = {0}", sb.dataResponse.message));
-        return sb.dataResponse;
+        Debug.Log(String.Format("SBDataResponse = {0}", DataResponse.message));
+        return DataResponse;
     }
 
     public void StopClient()
@@ -135,19 +134,19 @@ public class S3_MasterServerClient
         }
     }
 
-    private void Receive( Socket client, out StateObject so )
+    private void Receive( Socket client)
     {
-        so = null;
         try
         {
             // Create the state object.
             StateObject state = new StateObject();
             state.workSocket = client;
-            so = state;
+            
             
             // Begin receiving the data from the remote device.
             client.BeginReceive( state.buffer, 0, StateObject.BufferSize, 0,
-                new AsyncCallback( ReceiveCallback ), so );
+                new AsyncCallback( ReceiveCallback ), state );
+    
         }
         catch( Exception e )
         {
@@ -182,22 +181,24 @@ public class S3_MasterServerClient
                     new AsyncCallback( ReceiveCallback ), state );*/
 
                 //this was moved from else to here
-                receiveDone.Set();
+                
                 string content = state.sb.ToString();
                 var s3Response = JSON.Parse(content);
                 if (s3Response["responseCode"] != null && s3Response["message"] != null)
                 {
-                    state.dataResponse = new S3DataResponse
+                    DataResponse = new S3DataResponse
                     {
                         responseCode = s3Response["responseCode"].AsInt,
                         message = s3Response["message"]
                     };
 
                     Debug.Log(String.Format("s3Response = {0}", s3Response["message"]));
+                    receiveDone.Set();
                 }
                 else
                 {
                     Debug.Log("Failed to parse response!");
+                    receiveDone.Set();
                 }
             }
             else

@@ -116,8 +116,10 @@ public class AsynchronousSocketListener
             state.sb.Append(Encoding.ASCII.GetString(
                 state.buffer, 0, bytesRead));
 
-            // Check for end-of-file tag. If it is not there, read 
-            // more data.
+
+            //Assumes entire message will come in on one packet
+            //Porbably a bad idea
+
             content = state.sb.ToString();
             S3DataRequest requestContent = JsonConvert.DeserializeObject<S3DataRequest>(content);
             // All the data has been read from the 
@@ -128,6 +130,8 @@ public class AsynchronousSocketListener
 
             Send(handler, JsonConvert.SerializeObject(HandleDataRequest(requestContent)));
 
+
+            //Not sure this part is neccessary
 
             // Setup a new state object
             StateObject newstate = new StateObject();
