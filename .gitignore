@@ -21,7 +21,7 @@ S3server/bin/
 # Unity3D Generated File On Crash Reports
 sysinfo.txt
 
-*nupkg
-**/packages/*
-!**/packages/build/
-#!**/packages/repositories.config
+S3server/*nupkg
+S3server/packages/*
+!S3server/packages/build/
+!S3server/packages/repositories.config
