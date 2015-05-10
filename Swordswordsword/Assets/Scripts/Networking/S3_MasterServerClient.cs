@@ -44,6 +44,7 @@ public class S3_MasterServerClient
         try
         {
             client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            Debug.Log("IPAdressFamily: " + client.AddressFamily.ToString());
             // Establish the remote endpoint for the socket.
             // The name of the 
             // remote device is "host.contoso.com".
@@ -57,7 +58,7 @@ public class S3_MasterServerClient
             client.BeginConnect( remoteEP,
                 new AsyncCallback( ConnectCallback ), client );
             connectDone.WaitOne( 15000 );
-
+            connectDone.Reset();
             //response = "Connection created";
 
             // Send test data to the remote device.
