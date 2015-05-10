@@ -2,46 +2,56 @@
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading;
 using System.Configuration;
 using UnityEngine;
 
-namespace S3server
+public class GameServer
 {
-    class S3server
-    {
-        public int portNum = 2545;
-        const int PLAYER_LIMIT = 3;
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
-        [STAThread]
-        public static void Main()
-        {
-            //setting up a tcp/ip server
-            //step 1: create a listener, assign a port to it, start it
-            TcpListener playerListener = new TcpListener(2545);
-            playerListener.Start();
+    public UdpClient serverPort;
+    public bool hasPassword = false;
+    public string password = "";
+    public int passHash = 0;
 
-            //step 2: wait for incoming requests, accept socket
-            Socket playerSoc = playerListener.AcceptSocket();
-
-            //step 3: after accepting at least one socket, make a socket
-            //        network stream
-            Stream dataG = new NetworkStream(playerSoc);
-
-            //step 4: communicate w/ client using pre-established protocols
-            //aka, stuff that happens between server and client(s)
-
-            //step 5: close stream, then socket
-            dataG.Close();
-            playerSoc.Close();
-
-            //step 6: repeat step 2 until game quit/server shutdown
-
-
-        }
-
-
-    }
+    public byte[] gameData;
+    public byte[] gameDataGram;
 }
+
+public class S3server
+{
+    const int BUFFER_SIZE = 1024;
+
+    public void UDPServerStart()
+    {
+        //a default made server is assumed to have no password
+        GameServer server = new GameServer();
+        server.serverPort = new UdpClient(3500);
+        IPEndPoint ep = null;
+        
+        //before starting, load level first
+
+        while (true)
+        {
+            byte[] gameData = server.serverPort.Receive(ref ep);
+
+            //do stuff with it here
+            //put all the compiled data in a string
+            string decisions = "";
+            
+            byte[] gameDataGram = Encoding.ASCII.GetBytes(decisions);
+            server.serverPort.Send(gameDataGram, gameDataGram.Length);
+        }
+    }
+   public int portNum = 2545;
+    const int PLAYER_LIMIT = 3;
+
+    public int Main()
+    {
+        UDPServerStart();
+        return 0;
+    }
+
+
+}
+
