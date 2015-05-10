@@ -8,6 +8,7 @@ S3server/bin/
 *.csproj
 *.unityproj
 *.sln
+!S3server/*.sln
 *.suo
 *.tmp
 *.user
