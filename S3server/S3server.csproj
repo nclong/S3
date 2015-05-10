@@ -80,6 +80,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccountManager.cs" />
+    <Compile Include="DummyPleaseDelete.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

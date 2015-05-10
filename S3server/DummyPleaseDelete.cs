@@ -8,5 +8,6 @@ namespace S3server
 {
     class DummyPleaseDelete
     {
+        int zero;
     }
 }
