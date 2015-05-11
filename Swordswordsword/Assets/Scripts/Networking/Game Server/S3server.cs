@@ -29,14 +29,15 @@ public class S3server : MonoBehaviour
     GameServer server;
     IPEndPoint ep;
     S3_GameMessage messageType;
+    S3_GameMessageType t;
     const int BUFFER_SIZE = 1024;
     const int PLAYER_CAP = 4; //including "host"
 
     byte[] data;
     UdpClient newsock;
     IPEndPoint sender;
-    Queue receiveQ;
-    Queue toSendQ;
+    S3_MessagesQueue receiveQ;
+    S3_MessagesQueue toSendQ;
 
     void Start()
     {
@@ -46,23 +47,32 @@ public class S3server : MonoBehaviour
         server.serverPort = new UdpClient(3500);
         ep = null;
         sender = new IPEndPoint(IPAddress.Any, 0);
-        receiveQ = new Queue();
-        toSendQ = new Queue();
+        receiveQ = new S3_MessagesQueue();
+        toSendQ = new S3_MessagesQueue();
 
+        //Receive Thread
         Thread receiveThread = new Thread(delegate()
         {
             while (true)
             {
                 data = newsock.Receive(ref sender);
-                if(data.Length > 0)
-                    receiveQ.Enqueue(data);
+                S3_ServeTimeData serverTimeData = new S3_ServeTimeData
+                {
+                    time = S3_ServerTime.ServerTime
+                };
+                messageType = new S3_GameMessage(S3_ServerTime.ServerTime, S3_GameMessageType.ServerTime, serverTimeData);
+                receiveQ.AddMessage(messageType);
             }
         });
 
+
+        //Send Thread
         Thread sendThread = new Thread(delegate()
         {
             while (true)
             {
+                toSendQ.GetMessage();
+                //determine what kind of message is the server sending
             }
         });
     }
@@ -79,7 +89,7 @@ public class S3server : MonoBehaviour
 
     void LateUpdate()
     {
-        SendMessage();
+        SendMessage(messageType);
     }
     
     void ReadMessage()
@@ -87,9 +97,9 @@ public class S3server : MonoBehaviour
         
     }
 
-    void SendMessage()
+    void SendMessage(S3_GameMessage msg)
     {
-        
+        toSendQ.AddMessage(msg);
     }
 
     public void AcceptOrRejectRequest()
