@@ -6,7 +6,7 @@ using System.Threading;
 using System.Text;
 using UnityEngine;
 
-public class S3client
+public class S3client : MonoBehaviour
 {
     /// <summary>
     /// The main entry point for the application.
@@ -23,6 +23,7 @@ public class S3client
 
         try
         {
+
             //prepare player info to be sent to server
             gamePlayData = Encoding.ASCII.GetBytes(name);
 
@@ -41,23 +42,16 @@ public class S3client
         {
             Console.WriteLine(e.ToString());
         }
+    }
 
-        /*while (true)
-        {
-            //gather player data to send
-            //convert player data to string
-            string gpdString = "";
-            gamePlayData = Encoding.ASCII.GetBytes(gpdString);
+    void SendRequest()
+    {
+    
+    }
 
-            //send player data to server
-            player.Send(gamePlayData, gamePlayData.Length);
-
-            //recieve game state update from server
-            byte[] gpdBytes = player.Receive(ref endPt);
-
-            //decode game state into a string
-            string gameState = Encoding.ASCII.GetString(gpdBytes);
-        }*/
+    void RecieveResponse()
+    { 
+    
     }
 
     public static int Main()

@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Configuration;
+using System.Collections;
 using UnityEngine;
 
 public class GameServer
@@ -23,57 +24,77 @@ public class GameServer
     
 }
 
-public class S3server
+public class S3server : MonoBehaviour
 {
+    GameServer server;
+    IPEndPoint ep;
+    S3_GameMessage messageType;
     const int BUFFER_SIZE = 1024;
     const int PLAYER_CAP = 4; //including "host"
 
-    public void UDPServerStart()
+    byte[] data;
+    UdpClient newsock;
+    IPEndPoint sender;
+    Queue receiveQ;
+    Queue toSendQ;
+
+    void Start()
     {
-        //a default made server is assumed to have no password and no players
-        GameServer server = new GameServer();
+        data = new byte[1024];
+        ep = new IPEndPoint(IPAddress.Any, 3500);
+        newsock = new UdpClient(ep);
         server.serverPort = new UdpClient(3500);
-        IPEndPoint ep = null;
-        
+        ep = null;
+        sender = new IPEndPoint(IPAddress.Any, 0);
+        receiveQ = new Queue();
+        toSendQ = new Queue();
 
-
-        //before starting, load level first
-
-        //again before starting a game, listen and do handshake with clients
-
-        //game starts once all 4 players are in. should probably wait 5 seconds
-        while (true)
+        Thread receiveThread = new Thread(delegate()
         {
-            //determine the type of message it receives
-            //if a player is trying to connect, handle that
-            //by rejecting or accepting connection
+            while (true)
+            {
+                data = newsock.Receive(ref sender);
+                if(data.Length > 0)
+                    receiveQ.Enqueue(data);
+            }
+        });
 
-            //else it is just the player(s) that are in game
-            //so server has to handle that.
-            byte[] gameData = server.serverPort.Receive(ref ep);
-
-            //do stuff with it here
-            //put all the compiled data in a string
-            string decisions = "";
-            
-            byte[] gameDataGram = Encoding.ASCII.GetBytes(decisions);
-            server.serverPort.Send(gameDataGram, gameDataGram.Length);
-        }
+        Thread sendThread = new Thread(delegate()
+        {
+            while (true)
+            {
+            }
+        });
     }
-    public int portNum = 2545;
-    const int PLAYER_LIMIT = 3;
+
+    void Update()
+    {
+        ReadMessage();
+    }
+
+    void FixedUpdate()
+    { 
+    
+    }
+
+    void LateUpdate()
+    {
+        SendMessage();
+    }
+    
+    void ReadMessage()
+    {
+        
+    }
+
+    void SendMessage()
+    {
+        
+    }
 
     public void AcceptOrRejectRequest()
     { 
         
     }
-
-    public int Main()
-    {
-        UDPServerStart();
-        return 0;
-    }
-
-
 }
 
