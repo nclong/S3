@@ -7,5 +7,6 @@ using UnityEngine;
 public class ServerStartGameData
 {
     bool gameStarted;
+    float timeToStart;
 }
 
