@@ -3,6 +3,6 @@ using System.Collections;
 
 public class S3_ServerPlayerRotDRData : IMessageData {
 
-    byte PlayerNum;
-    float DRAngle;
+    public byte PlayerNum;
+    public float DRAngle;
 }

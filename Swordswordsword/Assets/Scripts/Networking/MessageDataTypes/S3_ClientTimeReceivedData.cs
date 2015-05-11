@@ -3,5 +3,5 @@ using System.Collections;
 
 public class S3_ClientTimeReceivedData : IMessageData
 {
-    bool acceptance;
+    public bool acceptance;
 }

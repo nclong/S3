@@ -3,5 +3,5 @@ using System.Collections;
 
 public class S3_ServerTimeOffsetData : IMessageData
 {
-    float offset;
+    public float offset;
 }

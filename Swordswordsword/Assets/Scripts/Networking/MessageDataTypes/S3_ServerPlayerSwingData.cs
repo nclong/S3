@@ -6,8 +6,8 @@ using UnityEngine;
 
 public class ServerPlayerSwingData
 {
-    float animateSpeed;
-    bool givesPermission;
+    public float animateSpeed;
+    public bool givesPermission;
     //take into account hit detection?
 }
 

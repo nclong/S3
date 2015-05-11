@@ -2,5 +2,5 @@
 using System.Collections;
 
 public class S3_ClientRotDR : IMessageData {
-    float Angle;
+    public float Angle;
 }

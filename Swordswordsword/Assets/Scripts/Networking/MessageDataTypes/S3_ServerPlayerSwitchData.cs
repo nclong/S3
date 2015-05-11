@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class ServerPlayerSwitchData
 {
-    float animateSpeed;
+    public float animateSpeed;
     //first check if player has a 2nd weapon on
-    bool givesPermission;
+    public bool givesPermission;
 }

@@ -3,11 +3,11 @@ using System.Collections;
 
 public class S3_ServerPlayerPosDRData : IMessageData {
 
-    byte PlayerNum;
-    float DRPosX;
-    float DRPosY;
-    float DRAngle;
-    float DRVelX;
-    float DRVelY;
-    float InitialTime;
+    public byte PlayerNum;                     
+    public float DRPosX;                       
+    public float DRPosY;                       
+    public float DRAngle;                      
+    public float DRVelX;                       
+    public float DRVelY;                       
+    public float InitialTime;                  
 }

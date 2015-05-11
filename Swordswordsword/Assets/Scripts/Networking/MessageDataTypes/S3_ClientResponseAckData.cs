@@ -2,6 +2,6 @@
 using System.Collections;
 
 public class S3_ClientResponseAckData : IMessageData {
-    bool ack;
+    public bool ack;
 
 }

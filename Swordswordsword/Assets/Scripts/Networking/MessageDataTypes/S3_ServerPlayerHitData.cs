@@ -3,6 +3,6 @@ using System.Collections;
 
 public class S3_ServerPlayerHitData : IMessageData {
 
-    byte PlayerNum;
-    byte damage;
+    public byte PlayerNum;
+    public byte damage;
 }

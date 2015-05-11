@@ -3,5 +3,5 @@ using System.Collections;
 
 public class S3_ServeTimeData : IMessageData 
 {
-    float time;
+    public float time;
 }

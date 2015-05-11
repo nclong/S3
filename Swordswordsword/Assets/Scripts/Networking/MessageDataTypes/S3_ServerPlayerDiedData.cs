@@ -2,5 +2,5 @@
 using System.Collections;
 
 public class S3_ServerPlayerDied : IMessageData {
-    byte PlayerNum;
+    public byte PlayerNum;
 }

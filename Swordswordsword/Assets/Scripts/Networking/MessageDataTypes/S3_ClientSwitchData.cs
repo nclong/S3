@@ -6,6 +6,6 @@ using UnityEngine;
 
 public class ClientSwitchData
 {
-    float animateSpeed;
+    public float animateSpeed;
 }
 

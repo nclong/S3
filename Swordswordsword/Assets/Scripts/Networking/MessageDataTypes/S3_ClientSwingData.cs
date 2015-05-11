@@ -6,6 +6,6 @@ using UnityEngine;
 
 public class ClientSwingData
 {
-    float animateSpeed;
+    public float animateSpeed;
 }
 
