@@ -10,4 +10,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/login.unity
   - enabled: 1
+    path: Assets/Scenes/roleSelection.unity
+  - enabled: 1
     path: Assets/Scenes/firstScene.unity
+  - enabled: 1
+    path: Assets/Scenes/tussle_client.unity
+  - enabled: 1
+    path: Assets/Scenes/tussle_server.unity
