@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class S3_ServerPlayerDied : IMessageData {
+public class S3_ServerPlayerDiedData : IMessageData {
     public byte PlayerNum;
 }

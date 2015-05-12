@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public class ClientSwitchData
+public class S3_ClientSwitchData : IMessageData
 {
     public float animateSpeed;
 }

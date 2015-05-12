@@ -7,6 +7,7 @@ using System.Threading;
 using System.Configuration;
 using System.Collections;
 using UnityEngine;
+using SimpleJSON;
 
 public class GameServer
 {
@@ -106,5 +107,6 @@ public class S3server : MonoBehaviour
     { 
         
     }
+
 }
 

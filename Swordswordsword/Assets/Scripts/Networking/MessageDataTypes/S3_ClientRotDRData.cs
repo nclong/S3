@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class S3_ClientRotDR : IMessageData {
+public class S3_ClientRotDRData : IMessageData {
     public float Angle;
 }

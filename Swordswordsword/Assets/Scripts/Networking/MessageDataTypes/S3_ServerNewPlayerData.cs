@@ -4,11 +4,9 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public class ServerNewPlayerData
+public class S3_ServerNewPlayerData : IMessageData
 {
-    public float[] velocity;
-    public float[] position;
-    public float[] angle;
-    public int health;
+    public string PlayerName;
+    public byte PlayerNum;
 }
 

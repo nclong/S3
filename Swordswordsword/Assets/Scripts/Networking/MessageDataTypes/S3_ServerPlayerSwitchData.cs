@@ -4,9 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public class ServerPlayerSwitchData
+public class S3_ServerPlayerSwitchData : IMessageData
 {
-    public float animateSpeed;
-    //first check if player has a 2nd weapon on
-    public bool givesPermission;
+    public byte PlayerNum;
 }

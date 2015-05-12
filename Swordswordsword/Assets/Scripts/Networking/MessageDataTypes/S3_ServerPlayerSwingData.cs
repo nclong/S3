@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public class ServerPlayerSwingData
+public class S3_ServerPlayerSwingData : IMessageData
 {
-    public float animateSpeed;
-    public bool givesPermission;
+    public byte PlayerNum;
     //take into account hit detection?
 }
 

@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public class ServerStartGameData
+public class S3_ServerStartGameData : IMessageData
 {
-    public bool gameStarted;
     public float timeToStart;
 }
 
