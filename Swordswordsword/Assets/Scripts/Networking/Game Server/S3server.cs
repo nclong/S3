@@ -73,6 +73,7 @@ public class S3server : MonoBehaviour
 
     void FixedUpdate()
     {
+
         S3_StateObject state = new S3_StateObject()
         {
             socket = newsock
