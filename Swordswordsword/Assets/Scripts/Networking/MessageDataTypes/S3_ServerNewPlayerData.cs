@@ -8,5 +8,7 @@ public class S3_ServerNewPlayerData : IMessageData
 {
     public string PlayerName;
     public byte PlayerNum;
+    public float PosX;
+    public float PosY;
 }
 

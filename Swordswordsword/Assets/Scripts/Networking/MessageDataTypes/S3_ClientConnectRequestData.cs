@@ -5,5 +5,5 @@ public class S3_ClientConnectRequestData : IMessageData
 {
 
     public string playerName;
-
+    public byte[] ip;
 }

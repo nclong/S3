@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class S3_MessagesQueue {
 
     public S3_MessagesQueue()
     {
-        ReceivedMessages = new Queue();
+        ReceivedMessages = new Queue<S3_GameMessage>();
     }
 
     public void AddMessage(S3_GameMessage message)
@@ -17,7 +18,7 @@ public class S3_MessagesQueue {
     {
         if( !IsEmpty )
         {
-            return (S3_GameMessage)( ReceivedMessages.Dequeue() ); 
+            return ( ReceivedMessages.Dequeue() ); 
         }
         else
         {
@@ -33,6 +34,6 @@ public class S3_MessagesQueue {
         }
     }
 
-    private Queue ReceivedMessages;
+    private Queue<S3_GameMessage> ReceivedMessages;
 
 }

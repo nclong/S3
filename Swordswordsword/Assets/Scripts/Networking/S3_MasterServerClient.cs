@@ -44,7 +44,6 @@ public class S3_MasterServerClient
         try
         {
             client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            Debug.Log("IPAdressFamily: " + client.AddressFamily.ToString());
             // Establish the remote endpoint for the socket.
             // The name of the 
             // remote device is "host.contoso.com".

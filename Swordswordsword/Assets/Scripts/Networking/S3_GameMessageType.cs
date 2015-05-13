@@ -1,6 +1,6 @@
-﻿public enum S3_GameMessageType
+﻿public enum S3_GameMessageType:int
 {
-    ClientConnectRequest,
+    ClientConnectRequest = 0,
     ServerConnectResponse,
     ClientResponseAck,
     ServerTime,
@@ -17,5 +17,6 @@
     ServerStartGame,
     ServerNewPlayer,
     ClientSwing,
-    ClientSwitch
+    ClientSwitch,
+    ServerGameOver
 }

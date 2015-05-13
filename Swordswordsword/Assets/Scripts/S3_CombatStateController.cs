@@ -20,14 +20,13 @@ public class S3_CombatStateController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        AnimatorStateInfo info = swordAnimator.GetCurrentAnimatorStateInfo( 0 );
-        if( info.IsName("ShoulderSlash") )
-        {
-            Debug.Log( "Slash Time" );
-        }
-        if( Input.GetButton( "Attack" ) && !info.IsName("ShoulderSlash") && !characterMovement.dashing )
-        {
-            swordAnimator.SetBool("slashing", true);
+
+	}
+
+    public void SwingSword()
+    {
+         AnimatorStateInfo info = swordAnimator.GetCurrentAnimatorStateInfo( 0 );
+        swordAnimator.SetBool("slashing", true);
             S3_SwordLaser laser = SwordObj.GetComponent<S3_SwordLaser>();
             if( laser != null && laser.enabled )
             {
@@ -52,15 +51,16 @@ public class S3_CombatStateController : MonoBehaviour {
 
             Debug.Log( "Slash Start" );
             Debug.Log( info.IsName( "ShoulderSlash" ) );
-        }
-        else
-        {
-            swordAnimator.SetBool( "slashing", false );
-        }
+    }
 
-        
-        
-	}
+    public AnimatorStateInfo GetAnimatorInfo(int x)
+    {
+        return swordAnimator.GetCurrentAnimatorStateInfo( x );
+    }
+    public void StopSwing()
+    {
+        swordAnimator.SetBool( "slashing", false );
+    }
 
     public GameObject GetSword()
     {

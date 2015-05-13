@@ -6,6 +6,7 @@ public class S3_GameMessage
     public float SendTime;
     public S3_GameMessageType MessageType;
     public IMessageData MessageData;
+    public byte PlayerNum;
 
     public S3_GameMessage(float time, S3_GameMessageType type, IMessageData data)
     {

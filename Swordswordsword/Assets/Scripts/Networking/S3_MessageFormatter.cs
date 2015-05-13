@@ -9,6 +9,7 @@ public class S3_MessageFormatter  {
     public static byte[] GameMessageToBytes(S3_GameMessage message)
     {
         List<byte> result = new List<byte>();
+        result.Add( message.PlayerNum );
         result.AddRange(BitConverter.GetBytes(message.SendTime));
         result.AddRange( BitConverter.GetBytes( (int)( message.MessageType ) ) );
         result.AddRange( GameMessageDataToBytes( message ) );
@@ -19,6 +20,7 @@ public class S3_MessageFormatter  {
     {
         int i = 0;
         S3_GameMessage result = new S3_GameMessage();
+        result.PlayerNum = byteMessage[i++];
         result.SendTime = BitConverter.ToSingle( byteMessage, i );
         i += sizeof(float);
         result.MessageType = (S3_GameMessageType)( BitConverter.ToInt32( byteMessage, i ) );
@@ -36,12 +38,15 @@ public class S3_MessageFormatter  {
             case S3_GameMessageType.ClientConnectRequest:
                 return new S3_ClientConnectRequestData
                 {
-                    playerName = Encoding.UTF8.GetString( rawData )
+                    ip = SubArray(rawData, i, 4),
+                    playerName = Encoding.UTF8.GetString( SubArray(rawData, 4, rawData.Length - 4 ))
                 };
             case S3_GameMessageType.ServerConnectResponse:
                 return new S3_ServerConnectResponseData
                 {
-                    acceptance = BitConverter.ToBoolean( rawData, i )
+                    acceptance = BitConverter.ToBoolean( rawData, i ),
+                    PosX = BitConverter.ToSingle(rawData, i + sizeof(bool)),
+                    PosY = BitConverter.ToSingle(rawData, i + sizeof(bool) + sizeof(float))
                 };
             case S3_GameMessageType.ClientResponseAck:
                 return new S3_ClientResponseAckData
@@ -49,7 +54,7 @@ public class S3_MessageFormatter  {
                     ack = BitConverter.ToBoolean( rawData, i )
                 };
             case S3_GameMessageType.ServerTime:
-                return new S3_ServeTimeData
+                return new S3_ServerTimeData
                 {
                     time = BitConverter.ToSingle( rawData, i )
                 };
@@ -127,12 +132,19 @@ public class S3_MessageFormatter  {
                 return new S3_ServerNewPlayerData
                 {
                     PlayerNum = rawData[i],
-                    PlayerName = Encoding.UTF8.GetString( SubArray<byte>( rawData, i + 1, rawData.Length - 1 ) )
+                    PosX = rawData[i+1],
+                    PosY = rawData[i+1+sizeof(float)],
+                    PlayerName = Encoding.UTF8.GetString( SubArray<byte>( rawData, i + 1 + sizeof(float) * 2, rawData.Length - (1 + sizeof(float) * 2) ) )
                 };
             case S3_GameMessageType.ClientSwing:
                 return new S3_ClientSwingData { animateSpeed = 0};
             case S3_GameMessageType.ClientSwitch:
                 return new S3_ClientSwitchData { animateSpeed = 0 };
+            case S3_GameMessageType.ServerGameOver:
+                return new S3_ServerGameOverData
+                {
+                    Victor = 0
+                };
             default:
                 throw new DataMisalignedException();
         }
@@ -150,13 +162,18 @@ public class S3_MessageFormatter  {
         switch (message.MessageType)
         {
             case S3_GameMessageType.ClientConnectRequest:
-                return Encoding.UTF8.GetBytes( ( (S3_ClientConnectRequestData)( message.MessageData ) ).playerName );
+                toReturn.AddRange(((S3_ClientConnectRequestData)(message.MessageData)).ip);
+                toReturn.AddRange( Encoding.UTF8.GetBytes( ( (S3_ClientConnectRequestData)( message.MessageData ) ).playerName ));
+                return toReturn.ToArray();
             case S3_GameMessageType.ServerConnectResponse:
-                return BitConverter.GetBytes( ( (S3_ServerConnectResponseData)( message.MessageData ) ).acceptance );
+                toReturn.AddRange( BitConverter.GetBytes( ( (S3_ServerConnectResponseData)( message.MessageData ) ).acceptance ));
+                toReturn.AddRange( BitConverter.GetBytes( ( (S3_ServerConnectResponseData)( message.MessageData ) ).PosX ) );
+                toReturn.AddRange( BitConverter.GetBytes( ( (S3_ServerConnectResponseData)( message.MessageData ) ).PosY ) );
+                return toReturn.ToArray();
             case S3_GameMessageType.ClientResponseAck:
                 return BitConverter.GetBytes( ( (S3_ClientResponseAckData)( message.MessageData ) ).ack);
             case S3_GameMessageType.ServerTime:
-                return BitConverter.GetBytes( ( (S3_ServeTimeData)( message.MessageData ) ).time );
+                return BitConverter.GetBytes( ( (S3_ServerTimeData)( message.MessageData ) ).time );
             case S3_GameMessageType.ClientTimeReceived:
                 return BitConverter.GetBytes( ( (S3_ClientTimeReceivedData)( message.MessageData ) ).acceptance );
             case S3_GameMessageType.ServerTimeOffset:
@@ -201,12 +218,16 @@ public class S3_MessageFormatter  {
                 return BitConverter.GetBytes(( (S3_ServerStartGameData)( message.MessageData ) ).timeToStart );
             case S3_GameMessageType.ServerNewPlayer:
                 toReturn.Add( ( (S3_ServerNewPlayerData)( message.MessageData ) ).PlayerNum );
+                toReturn.AddRange( BitConverter.GetBytes(( (S3_ServerNewPlayerData)( message.MessageData ) ).PosX) );
+                toReturn.AddRange( BitConverter.GetBytes( ( (S3_ServerNewPlayerData)( message.MessageData ) ).PosY ) );
                 toReturn.AddRange( Encoding.UTF8.GetBytes( ( (S3_ServerNewPlayerData)( message.MessageData ) ).PlayerName ) );
                 return toReturn.ToArray();
             case S3_GameMessageType.ClientSwing:
                 return new byte[1] { 0 };
             case S3_GameMessageType.ClientSwitch:
                 return new byte[1] { 0 };
+            case S3_GameMessageType.ServerGameOver:
+                return new byte[1] { ((S3_ServerGameOverData)(message.MessageData)).Victor};
             default:
                 return new byte[1] { 0 };
         }
