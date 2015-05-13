@@ -31,6 +31,7 @@ public class S3client : MonoBehaviour
 
         try
         {
+            player.Connect( HostEndPoint );
             S3_ClientConnectRequestData request = new S3_ClientConnectRequestData
             {
                 playerName = name

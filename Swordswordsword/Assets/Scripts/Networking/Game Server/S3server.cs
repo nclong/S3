@@ -64,6 +64,7 @@ public class S3server : MonoBehaviour
         //});
 
         //receiveThread.Start();
+   
     }
 
     void Update()
