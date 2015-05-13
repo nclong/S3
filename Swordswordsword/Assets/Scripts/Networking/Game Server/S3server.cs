@@ -9,25 +9,17 @@ using System.Collections;
 using UnityEngine;
 using SimpleJSON;
 
-public class GameServer
+public class S3_StateObject
 {
-    public UdpClient serverPort;
-    public bool hasPassword = false;
-    public string password = "";
-    public int passHash = 0;
-
-    public Time time;
-    /*public byte[] gameData;
-    public string decisions;
-    public byte[] gameDataGram;*/
-
-    int numPlayers;
-    
+    public UdpClient socket = null;
+    public const int BufferSize = 1024;
+    public byte[] buffer = new byte[BufferSize];
+    public S3_GameMessage message = new S3_GameMessage();
 }
 
 public class S3server : MonoBehaviour
 {
-    GameServer server;
+    //GameServer server;
     IPEndPoint ep;
     S3_GameMessage messageType;
     S3_GameMessageType t;
@@ -45,7 +37,7 @@ public class S3server : MonoBehaviour
         data = new byte[1024];
         ep = new IPEndPoint(IPAddress.Any, 3500);
         newsock = new UdpClient(ep);
-        server.serverPort = new UdpClient(3500);
+        //server.serverPort = new UdpClient(3500);
         ep = null;
         sender = new IPEndPoint(IPAddress.Any, 0);
         receiveQ = new S3_MessagesQueue();
@@ -57,12 +49,7 @@ public class S3server : MonoBehaviour
             while (true)
             {
                 data = newsock.Receive(ref sender);
-                S3_ServeTimeData serverTimeData = new S3_ServeTimeData
-                {
-                    time = S3_ServerTime.ServerTime
-                };
-                messageType = new S3_GameMessage(S3_ServerTime.ServerTime, S3_GameMessageType.ServerTime, serverTimeData);
-                receiveQ.AddMessage(messageType);
+                receiveQ.AddMessage(S3_MessageFormatter.BytesToGameMessage(data));
             }
         });
 
@@ -72,10 +59,11 @@ public class S3server : MonoBehaviour
         {
             while (true)
             {
-                toSendQ.GetMessage();
                 //determine what kind of message is the server sending
             }
         });
+
+        receiveThread.Start();
     }
 
     void Update()
@@ -84,13 +72,16 @@ public class S3server : MonoBehaviour
     }
 
     void FixedUpdate()
-    { 
-    
+    {
+        S3_StateObject state = new S3_StateObject()
+        {
+            socket = newsock
+        };
+        newsock.BeginReceive( ReceiveCallback, state );
     }
 
     void LateUpdate()
     {
-        SendMessage(messageType);
     }
     
     void ReadMessage()
@@ -98,14 +89,26 @@ public class S3server : MonoBehaviour
         
     }
 
-    void SendMessage(S3_GameMessage msg)
+    public void SendMessage(S3_GameMessage msg)
     {
-        toSendQ.AddMessage(msg);
+        toSendQ.AddMessage( msg );
     }
 
     public void AcceptOrRejectRequest()
     { 
         
+    }
+
+    private void ReceiveCallback(IAsyncResult result)
+    {
+        S3_StateObject state = (S3_StateObject)result.AsyncState;
+        data = state.socket.EndReceive( result, ref ep );
+        Debug.Log( "Message received: " + data.ToString() );
+        if( data.Length > 0)
+        {
+            receiveQ.AddMessage( S3_MessageFormatter.BytesToGameMessage( data ) );
+        }
+     
     }
 
 }

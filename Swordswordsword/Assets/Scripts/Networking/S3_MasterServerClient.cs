@@ -113,6 +113,8 @@ public class S3_MasterServerClient
         }
         client.Close();
     }
+
+
     private static void ConnectCallback( IAsyncResult ar )
     {
         try

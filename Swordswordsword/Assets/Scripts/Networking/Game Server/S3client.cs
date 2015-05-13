@@ -13,28 +13,42 @@ public class S3client : MonoBehaviour
     /// </summary>
     //[STAThread]
 
-    public static void StartClient()
+    public string HostIP;
+
+    void Start()
+    {
+        StartClient();
+    }
+
+    public void StartClient()
     {
         //remember that UdpClient *is* a socket
-        UdpClient player = new UdpClient(3000);
+        UdpClient player = new UdpClient(3500);
 
         byte[] gamePlayData = new byte[1024];
         string name = "Teddy Tester";
+        IPEndPoint HostEndPoint = new IPEndPoint( IPAddress.Parse( HostIP ), 3500 );
 
         try
         {
-
+            S3_ClientConnectRequestData request = new S3_ClientConnectRequestData
+            {
+                playerName = name
+            };
+            S3_GameMessage message = new S3_GameMessage
+            {
+                SendTime = Time.time,
+                MessageType = S3_GameMessageType.ClientConnectRequest,
+                MessageData = request
+            };
             //prepare player info to be sent to server
-            gamePlayData = Encoding.ASCII.GetBytes(name);
+            gamePlayData = S3_MessageFormatter.GameMessageToBytes( message );
 
             //send info out
             player.Send(gamePlayData, gamePlayData.Length);
 
             //make an endpoint that is able to read anything the server sends
             IPEndPoint ipRemoteEP = new IPEndPoint(IPAddress.Any, 0);
-
-            byte[] gpdBytes = player.Receive(ref ipRemoteEP);
-            string gameState = Encoding.ASCII.GetString(gpdBytes);
 
             player.Close();
         }
@@ -54,10 +68,10 @@ public class S3client : MonoBehaviour
     
     }
 
-    public static int Main()
-    {
-        //Using UDP methodology
-        StartClient();
-        return 0;
-    }
+    //public static int Main()
+    //{
+    //    //Using UDP methodology
+    //    StartClient();
+    //    return 0;
+    //}
 }
