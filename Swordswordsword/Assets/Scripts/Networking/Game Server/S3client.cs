@@ -55,7 +55,7 @@ public class S3client : MonoBehaviour
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.ToString());
+            Debug.Log(e.ToString());
         }
     }
 
