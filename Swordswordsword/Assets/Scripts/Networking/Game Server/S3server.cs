@@ -44,26 +44,26 @@ public class S3server : MonoBehaviour
         toSendQ = new S3_MessagesQueue();
 
         //Receive Thread
-        Thread receiveThread = new Thread(delegate()
-        {
-            while (true)
-            {
-                data = newsock.Receive(ref sender);
-                receiveQ.AddMessage(S3_MessageFormatter.BytesToGameMessage(data));
-            }
-        });
+        //Thread receiveThread = new Thread(delegate()
+        //{
+        //    while (true)
+        //    {
+        //        data = newsock.Receive(ref sender);
+        //        receiveQ.AddMessage(S3_MessageFormatter.BytesToGameMessage(data));
+        //    }
+        //});
 
 
-        //Send Thread
-        Thread sendThread = new Thread(delegate()
-        {
-            while (true)
-            {
-                //determine what kind of message is the server sending
-            }
-        });
+        ////Send Thread
+        //Thread sendThread = new Thread(delegate()
+        //{
+        //    while (true)
+        //    {
+        //        //determine what kind of message is the server sending
+        //    }
+        //});
 
-        receiveThread.Start();
+        //receiveThread.Start();
     }
 
     void Update()
@@ -101,6 +101,7 @@ public class S3server : MonoBehaviour
 
     private void ReceiveCallback(IAsyncResult result)
     {
+        Debug.Log( "ReceiveCallback called" );
         S3_StateObject state = (S3_StateObject)result.AsyncState;
         data = state.socket.EndReceive( result, ref ep );
         Debug.Log( "Message received: " + data.ToString() );

@@ -46,6 +46,7 @@ public class S3client : MonoBehaviour
 
             //send info out
             player.Send(gamePlayData, gamePlayData.Length);
+            Debug.Log( "Data Sent" );
 
             //make an endpoint that is able to read anything the server sends
             IPEndPoint ipRemoteEP = new IPEndPoint(IPAddress.Any, 0);
