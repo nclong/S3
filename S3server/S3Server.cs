@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -22,69 +22,99 @@ public class StateObject
 public class AsynchronousSocketListener
 {
     // Thread signal.
-    public static ManualResetEvent allDone = new ManualResetEvent(false);
+    public static ManualResetEvent allDone = new ManualResetEvent( false );
     public static Dictionary<string, Socket> clients = new Dictionary<string, Socket>();
+
+    // Data buffer for incoming data.
+    byte[] bytes = new Byte[1024];
+
+    // Create a TCP/IP socket.
+    public static Socket listener = new Socket( AddressFamily.InterNetwork,
+         SocketType.Stream, ProtocolType.Tcp );
+
+    //Listen to external IP address
+    IPHostEntry ipHostInfo;
+    IPAddress ipAddress;
+    IPEndPoint localEndPoint;
+    public static IPEndPoint any;
 
     public AsynchronousSocketListener()
     {
+        //Listen to external IP address
+        ipHostInfo = Dns.GetHostEntry( Dns.GetHostName() );
+        ipAddress = ipHostInfo.AddressList[0];
+        localEndPoint = new IPEndPoint( ipAddress, 11000 );
+
+        // Listen to any IP Address
+        any = new IPEndPoint( IPAddress.Any, 11000 );
+
+        //bind listener
+        try
+        {
+            listener.Bind( any );
+            listener.Listen( 100 );
+        }
+        catch( Exception e )
+        {
+            Console.WriteLine( e.ToString() );
+        }
     }
 
     public static void StartListening()
     {
-        // Data buffer for incoming data.
-        byte[] bytes = new Byte[1024];
+        //// Data buffer for incoming data.
+        //byte[] bytes = new Byte[1024];
 
-        // Create a TCP/IP socket.
-        Socket listener = new Socket(AddressFamily.InterNetwork,
-            SocketType.Stream, ProtocolType.Tcp);
+        //// Create a TCP/IP socket.
+        //Socket listener = new Socket(AddressFamily.InterNetwork,
+        //    SocketType.Stream, ProtocolType.Tcp);
 
-        //Listen to external IP address
-        IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-        IPAddress ipAddress = ipHostInfo.AddressList[0];
-        IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 11000);
+        ////Listen to external IP address
+        //IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
+        //IPAddress ipAddress = ipHostInfo.AddressList[0];
+        //IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 11000);
 
-        // Listen to any IP Address
-        IPEndPoint any = new IPEndPoint(IPAddress.Any, 11000);
+        //// Listen to any IP Address
+        //IPEndPoint any = new IPEndPoint(IPAddress.Any, 11000);
 
         // Bind the socket to the local endpoint and listen for incoming connections.
         try
         {
-            listener.Bind(any);
-            listener.Listen(100);
+            //listener.Bind(any);
+            //listener.Listen(100);
 
-            while (true)
-            {
-                // Set the event to nonsignaled state.
-                allDone.Reset();
+            //while (true)
+            //{
+            // Set the event to nonsignaled state.
+            allDone.Reset();
 
-                // Start an asynchronous socket to listen for connections.
-                Console.WriteLine("Waiting for a connection..");
-                listener.BeginAccept(
-                    new AsyncCallback(AcceptCallback),
-                    listener);
-                // Wait until a connection is made before continuing.
-                allDone.WaitOne();
-            }
+            // Start an asynchronous socket to listen for connections.
+            listener.BeginAccept(
+                new AsyncCallback( AcceptCallback ),
+                listener );
+            // Wait until a connection is made before continuing.
+            allDone.WaitOne();
+            //}
 
         }
-        catch (Exception e)
+        catch( Exception e )
         {
-            Console.WriteLine(e.ToString());
+            Console.WriteLine( e.ToString() );
         }
 
-        Console.WriteLine("\nPress ENTER to continue...");
-        Console.Read();
+        //Console.WriteLine("\nPress ENTER to continue...");
+        //Console.Read();
 
     }
 
-    public static void AcceptCallback(IAsyncResult ar)
+    public static void AcceptCallback( IAsyncResult ar )
     {
         // Signal the main thread to continue.
         allDone.Set();
 
         // Get the socket that handles the client request.
         Socket listener = (Socket)ar.AsyncState;
-        Socket handler = listener.EndAccept(ar);
+        Socket handler = listener.EndAccept( ar );
 
         // Create the state object.
         StateObject state = new StateObject();
@@ -94,11 +124,11 @@ public class AsynchronousSocketListener
         // So I need to store all clients sockets so I can send them messages later
         // TODO: store in meaningful way,such as Dictionary<string,Socket>
 
-        handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-            new AsyncCallback(ReadCallback), state);
+        handler.BeginReceive( state.buffer, 0, StateObject.BufferSize, 0,
+            new AsyncCallback( ReadCallback ), state );
     }
 
-    public static void ReadCallback(IAsyncResult ar)
+    public static void ReadCallback( IAsyncResult ar )
     {
         String content = String.Empty;
 
@@ -108,27 +138,27 @@ public class AsynchronousSocketListener
         Socket handler = state.workSocket;
 
         // Read data from the client socket. 
-        int bytesRead = handler.EndReceive(ar);
+        int bytesRead = handler.EndReceive( ar );
 
-        if (bytesRead > 0)
+        if( bytesRead > 0 )
         {
             // There  might be more data, so store the data received so far.
-            state.sb.Append(Encoding.ASCII.GetString(
-                state.buffer, 0, bytesRead));
+            state.sb.Append( Encoding.ASCII.GetString(
+                state.buffer, 0, bytesRead ) );
 
 
             //Assumes entire message will come in on one packet
             //Porbably a bad idea
 
             content = state.sb.ToString();
-            S3DataRequest requestContent = JsonConvert.DeserializeObject<S3DataRequest>(content);
+            S3DataRequest requestContent = JsonConvert.DeserializeObject<S3DataRequest>( content );
             // All the data has been read from the 
             // client. Display it on the console.
-            Console.WriteLine("Read {0} bytes from socket. \n Data : {1}",
-                content.Length, content);
-            Console.WriteLine("\n\n");
+            Console.WriteLine( "Read {0} bytes from socket. \n Data : {1}",
+                content.Length, content );
+            Console.WriteLine( "\n\n" );
 
-            Send(handler, JsonConvert.SerializeObject(HandleDataRequest(requestContent)));
+            Send( handler, JsonConvert.SerializeObject( HandleDataRequest( requestContent ) ) );
 
 
             //Not sure this part is neccessary
@@ -138,20 +168,20 @@ public class AsynchronousSocketListener
             newstate.workSocket = handler;
 
             // Call BeginReceive with a new state object
-            handler.BeginReceive(newstate.buffer, 0, StateObject.BufferSize, 0,
-            new AsyncCallback(ReadCallback), newstate);
+            handler.BeginReceive( newstate.buffer, 0, StateObject.BufferSize, 0,
+            new AsyncCallback( ReadCallback ), newstate );
         }
     }
 
-    private static S3DataResponse HandleDataRequest(S3DataRequest request)
+    private static S3DataResponse HandleDataRequest( S3DataRequest request )
     {
-        if (request.type == "Login")
+        if( request.type == "Login" )
         {
-            return AccountManager.RequestLogin(request);
+            return AccountManager.RequestLogin( request );
         }
-        else if (request.type == "Register")
+        else if( request.type == "Register" )
         {
-            return AccountManager.RequestRegister(request);
+            return AccountManager.RequestRegister( request );
         }
         return new S3DataResponse()
         {
@@ -160,18 +190,18 @@ public class AsynchronousSocketListener
         };
     }
 
-    private static void Send(Socket handler, String data)
+    private static void Send( Socket handler, String data )
     {
         // Convert the string data to byte data using ASCII encoding.
-        byte[] byteData = Encoding.ASCII.GetBytes(data);
-        Console.WriteLine("Attempting to send {0} bytes", byteData.Length);
+        byte[] byteData = Encoding.ASCII.GetBytes( data );
+        Console.WriteLine( "Attempting to send {0} bytes", byteData.Length );
 
         // Begin sending the data to the remote device.
-        handler.BeginSend(byteData, 0, byteData.Length, 0,
-            new AsyncCallback(SendCallback), handler);
+        handler.BeginSend( byteData, 0, byteData.Length, 0,
+            new AsyncCallback( SendCallback ), handler );
     }
 
-    private static void SendCallback(IAsyncResult ar)
+    private static void SendCallback( IAsyncResult ar )
     {
         try
         {
@@ -179,19 +209,141 @@ public class AsynchronousSocketListener
             Socket handler = (Socket)ar.AsyncState;
 
             // Complete sending the data to the remote device.
-            int bytesSent = handler.EndSend(ar);
-            Console.WriteLine("Sent {0} bytes to client.", bytesSent);
+            int bytesSent = handler.EndSend( ar );
+            Console.WriteLine( "Sent {0} bytes to client.", bytesSent );
         }
-        catch (Exception e)
+        catch( Exception e )
         {
-            Console.WriteLine(e.ToString());
+            Console.WriteLine( e.ToString() );
         }
     }
 
 
-    public static int Main(String[] args)
+    public static void drawMenu( string status )
     {
-        StartListening();
+        //clear the console
+        Console.Clear();
+
+        Console.WriteLine( "----------------------------------------------------" );
+        Console.WriteLine( "           Sword Sword Sword Server!" );
+        Console.WriteLine( "----------------------------------------------------" );
+        Console.WriteLine( "SERVER STATUS: [" + status + "]" );
+        Console.WriteLine( "# of Connections: [0] (Not yet Implemented)" );
+        Console.WriteLine( "[F1] Start Server" );
+        Console.WriteLine( "[F2] Stop Server (Not yet Implemented)" );
+        Console.WriteLine( "[INSERT] Exit" );
+        Console.WriteLine( "----------------------------------------------------" );
+        Console.WriteLine( "" );
+        Console.WriteLine( "----------------------------------------------------" );
+    }
+
+    public static int Main( String[] args )
+    {
+        //variable to store information about key presses
+        ConsoleKeyInfo keyinfo;
+
+        //Give initial message
+        Console.WriteLine( "Welcome to the S3 server! Please press any key to continue..." );
+
+        //grab initial state
+        keyinfo = Console.ReadKey();
+
+        //string to hold the status of the server
+        string serverStatus = "OFF";
+
+        //StartListening();
+
+        //variables
+        //Server *server = new Server();
+        AsynchronousSocketListener server = new AsynchronousSocketListener();
+
+        bool updateServerDisplay = true; //starts true for initial draw
+        bool started = false;
+        //time_t onePressTimer = clock();
+
+        //server loops until we press insert
+        do
+        {
+            if( updateServerDisplay )
+            {
+
+                drawMenu( serverStatus );
+
+                //toggle update flag off
+                updateServerDisplay = false;
+            }
+
+            //If there is a key in the key stream buffer
+            if( Console.KeyAvailable )
+            {
+                //Grab the key pressed
+                keyinfo = Console.ReadKey();
+
+                if( keyinfo.Key == ConsoleKey.F1 && !started )
+                {
+                    serverStatus = "Awaiting New Connections";
+                    started = true;
+
+                    //redraw
+                    drawMenu( serverStatus );
+
+                    //begin listening
+                    StartListening();
+
+                    //tell the server UI to update, eventually we need this to run only if the pressed key is F1, F2, or Insert
+                    updateServerDisplay = true;
+                }
+                else if( keyinfo.Key == ConsoleKey.F2 && started )
+                {
+                    serverStatus = "OFF";
+                    started = false;
+
+                    //tell the server UI to update, eventually we need this to run only if the pressed key is F1, F2, or Insert
+                    updateServerDisplay = true;
+                }
+            }
+
+            //Use timer to prevent button from being pressed multiple times in one press
+            /*if (clock() - onePressTimer > 400)
+            {
+                //Handle key presses for server commands
+                if (GetAsyncKeyState(VK_F1) && !started) //SERVER START
+                {
+                    //this is where we'll start the server
+                    if (server->Start())
+                    {
+                        started = true;
+                        server->Listen();
+                        if (server->getNumConnections() > 0) server->Receive();
+                    }
+                    else printf("Error: Unable to start Server!\n");
+
+                    //tell server to redraw display with updated text
+                    updateServerDisplay = true;
+
+                    //reset press timer
+                    onePressTimer = clock();
+                }
+                else if (GetAsyncKeyState(VK_F2) && started) //SERVER STOP
+                {
+                    //this is where we'll stop the server
+                    if (server->Stop()) started = false;
+                    else printf("Error: Unable to stop Server!\n");
+
+                    //tell server to redraw display with updated text
+                    updateServerDisplay = true;
+
+                    //reset press timer
+                    //onePressTimer = clock();
+                }
+            }*/
+        }
+        while( keyinfo.Key != ConsoleKey.Insert );
+
+        //clean up
+        //delete server;
+        //server = NULL;
+
         return 0;
     }
 }
