@@ -34,8 +34,7 @@ public class S3_DeadReckoning : MonoBehaviour {
             DRPosX = transform.position.x,
             DRPosY = transform.position.y,
             DRVelX = PlayerRB.velocity.x,
-            DRVelY = PlayerRB.velocity.y,
-            DRAngle = 0f
+            DRVelY = PlayerRB.velocity.y
         };
         S3_GameMessage message = new S3_GameMessage
         {

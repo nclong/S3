@@ -91,7 +91,6 @@ public class S3_MessageFormatter  {
             case S3_GameMessageType.ClientPosDR:
                 return new S3_ClientPosDRData
                 {
-                    DRAngle = BitConverter.ToSingle( rawData, i ),
                     DRPosX = BitConverter.ToSingle( rawData, i + sizeof( float ) * 1 ),
                     DRPosY = BitConverter.ToSingle( rawData, i + sizeof( float ) * 2 ),
                     DRVelX = BitConverter.ToSingle( rawData, i + sizeof( float ) * 3 ),
@@ -179,7 +178,6 @@ public class S3_MessageFormatter  {
             case S3_GameMessageType.ServerTimeOffset:
                 return BitConverter.GetBytes( ( (S3_ServerTimeOffsetData)( message.MessageData ) ).offset );
             case S3_GameMessageType.ServerPlayerPosDR:
-                toReturn.AddRange( BitConverter.GetBytes( ( (S3_ServerPlayerPosDRData)( message.MessageData ) ).DRAngle ) );
                 toReturn.AddRange( BitConverter.GetBytes( ( (S3_ServerPlayerPosDRData)( message.MessageData ) ).DRPosX ) );
                 toReturn.AddRange( BitConverter.GetBytes( ( (S3_ServerPlayerPosDRData)( message.MessageData ) ).DRPosY ) );
                 toReturn.AddRange( BitConverter.GetBytes( ( (S3_ServerPlayerPosDRData)( message.MessageData ) ).DRVelX ) );
@@ -194,7 +192,6 @@ public class S3_MessageFormatter  {
                 return toReturn.ToArray();
                 
             case S3_GameMessageType.ClientPosDR:
-                toReturn.AddRange( BitConverter.GetBytes( ( (S3_ClientPosDRData)( message.MessageData ) ).DRAngle ) );
                 toReturn.AddRange( BitConverter.GetBytes( ( (S3_ClientPosDRData)( message.MessageData ) ).DRPosX ) );
                 toReturn.AddRange( BitConverter.GetBytes( ( (S3_ClientPosDRData)( message.MessageData ) ).DRPosY ) );
                 toReturn.AddRange( BitConverter.GetBytes( ( (S3_ClientPosDRData)( message.MessageData ) ).DRVelX ) );
