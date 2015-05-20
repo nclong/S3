@@ -65,7 +65,7 @@ public class S3client : MonoBehaviour
             gamePlayData = S3_MessageFormatter.GameMessageToBytes( message );
 
             //send info out
-            player.Send( gamePlayData, gamePlayData.Length, HostEndPoint );
+            player.Send( gamePlayData, gamePlayData.Length );
             Debug.Log( "Data Sent" );
 
             //make an endpoint that is able to read anything the server sends
@@ -119,7 +119,7 @@ public class S3client : MonoBehaviour
                 socket = player,
                 buffer = bytesData
             };
-            player.BeginSend( state.buffer, state.buffer.Length, HostEndPoint, new AsyncCallback(SendCallback), state );
+            player.BeginSend( state.buffer, state.buffer.Length, new AsyncCallback(SendCallback), state );
         }
     }
 

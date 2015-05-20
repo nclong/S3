@@ -71,6 +71,7 @@ GameObject:
   - 114: {fileID: 11432102}
   - 60: {fileID: 6006904}
   - 114: {fileID: 11424524}
+  - 114: {fileID: 11471136}
   m_Layer: 0
   m_Name: Player_Client
   m_TagString: Player
@@ -516,6 +517,18 @@ MonoBehaviour:
   uses: 20
   Damage: 0
   bulletProj: {fileID: 0}
+--- !u!114 &11471136
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 124880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 066f7bfa8bb412f4eb2d3764fbdd153a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: 100
 --- !u!114 &11480508
 MonoBehaviour:
   m_ObjectHideFlags: 1

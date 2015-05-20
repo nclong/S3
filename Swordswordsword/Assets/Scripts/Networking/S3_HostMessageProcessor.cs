@@ -126,6 +126,7 @@ public class S3_HostMessageProcessor : MonoBehaviour {
 
     private void HandleTimeReceived(S3_GameMessage message)
     {
+        //needs to be divided by 2
         server.playerManager.TimeOffsets[(int)( message.PlayerNum )] = Time.time - server.playerManager.TimeOffsets[(int)( message.PlayerNum )];
 
         S3_ServerTimeOffsetData data = new S3_ServerTimeOffsetData

@@ -51,9 +51,16 @@ public class S3server : MonoBehaviour
 
         newsock = new UdpClient(3500);
         //server.serverPort = new UdpClient(3500);
-        sender = new IPEndPoint(IPAddress.Any, 3501);
+        sender = new IPEndPoint(IPAddress.Any, 0);
         receiveQ = new S3_MessagesQueue();
         toSendQ = new S3_MessagesQueue();
+
+        S3_StateObject state = new S3_StateObject()
+        {
+            socket = newsock,
+            endPoint = sender
+        };
+        newsock.BeginReceive(new AsyncCallback(ReceiveCallback), state);
 
         //Receive Thread
         //Thread receiveThread = new Thread(delegate()
@@ -87,12 +94,8 @@ public class S3server : MonoBehaviour
     void FixedUpdate()
     {
         //Receive Messages
-        S3_StateObject state = new S3_StateObject()
-        {
-            socket = newsock,
-            endPoint = ep
-        };
-        newsock.BeginReceive( new AsyncCallback(ReceiveCallback), state );
+
+        //Move to the callback
 
         //SendMessages if there are any
         SendMessages();
@@ -140,11 +143,22 @@ public class S3server : MonoBehaviour
     {
         S3_StateObject state = (S3_StateObject)result.AsyncState;
         state.buffer = state.socket.EndReceive( result, ref state.endPoint );
-        if( data.Length > 0)
+        if( state.buffer.Length > 0)
         {
             state.message = S3_MessageFormatter.BytesToGameMessage( state.buffer );
             receiveQ.AddMessage( state.message );
         }
+        for(int i = 0; i < state.buffer.Length; ++i )
+        {
+            Debug.Log(state.buffer[i]);
+        }
+
+        S3_StateObject newState = new S3_StateObject()
+        {
+            socket = newsock,
+            endPoint = sender
+        };
+        newsock.BeginReceive(new AsyncCallback(ReceiveCallback), newState);
     }
 }
 
