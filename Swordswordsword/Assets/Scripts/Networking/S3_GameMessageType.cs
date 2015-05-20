@@ -18,5 +18,11 @@
     ServerNewPlayer,
     ClientSwing,
     ClientSwitch,
-    ServerGameOver
+    ServerGameOver,
+    ServerSwordzookaPos,
+    ServerSwordzookaRot,
+    ServerSwordzookaHit,
+    ServerGunswordPos,
+    ServerGunswordRot,
+    ServerGunswordHit
 }
