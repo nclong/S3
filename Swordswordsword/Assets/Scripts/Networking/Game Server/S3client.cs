@@ -70,6 +70,14 @@ public class S3client : MonoBehaviour
 
             //make an endpoint that is able to read anything the server sends
              ipRemoteEP = new IPEndPoint(IPAddress.Any, 0);
+
+             S3_StateObject state = new S3_StateObject()
+             {
+                 socket = player,
+                 endPoint = ipRemoteEP
+             };
+
+             player.BeginReceive( new AsyncCallback( ReceiveCallback ), state );
         }
         catch (Exception e)
         {
@@ -85,13 +93,7 @@ public class S3client : MonoBehaviour
     void FixedUpdate()
     {
         //Receive Messages
-        S3_StateObject state = new S3_StateObject()
-        {
-            socket = player,
-            endPoint = ipRemoteEP
-        };
 
-        player.BeginReceive( new AsyncCallback(ReceiveCallback), state );
 
         //SendMessages if there are
         SendMessages();
@@ -143,5 +145,13 @@ public class S3client : MonoBehaviour
         {
             ReceiveQueue.AddMessage( S3_MessageFormatter.BytesToGameMessage( data ) );
         }
+
+        S3_StateObject newState = new S3_StateObject()
+        {
+            socket = player,
+            endPoint = ipRemoteEP
+        };
+
+        player.BeginReceive( new AsyncCallback( ReceiveCallback ), newState );
     }
 }
