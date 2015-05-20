@@ -52,4 +52,9 @@ public class S3_ServerPlayerManager : MonoBehaviour {
 
         return currentPlayerCount++;
     }
+
+    float calculateLatency()
+    {
+        return 0.0f;
+    }
 }

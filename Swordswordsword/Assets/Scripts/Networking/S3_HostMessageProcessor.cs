@@ -39,6 +39,12 @@ public class S3_HostMessageProcessor : MonoBehaviour {
             case S3_GameMessageType.ServerPlayerSwitch:
             case S3_GameMessageType.ServerStartGame:
             case S3_GameMessageType.ServerNewPlayer:
+            case S3_GameMessageType.ServerSwordzookaPos:
+            case S3_GameMessageType.ServerSwordzookaRot:
+            case S3_GameMessageType.ServerSwordzookaHit:
+            case S3_GameMessageType.ServerGunswordPos:
+            case S3_GameMessageType.ServerGunswordRot:
+            case S3_GameMessageType.ServerGunswordHit:
             default:
                 break;
         }

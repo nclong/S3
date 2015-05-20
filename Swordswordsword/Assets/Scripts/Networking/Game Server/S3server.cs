@@ -94,7 +94,7 @@ public class S3server : MonoBehaviour
         };
         newsock.BeginReceive( new AsyncCallback(ReceiveCallback), state );
 
-        //SendMessages if there are
+        //SendMessages if there are any
         SendMessages();
         ReadMessages();
     }
