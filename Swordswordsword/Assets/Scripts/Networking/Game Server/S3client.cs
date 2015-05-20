@@ -48,7 +48,7 @@ public class S3client : MonoBehaviour
         try
         {
             IPHostEntry ipHostInfo = Dns.GetHostEntry( Dns.GetHostName() );
-            IPAddress ipAddress = ipHostInfo.AddressList[0];
+            IPAddress ipAddress = ipHostInfo.AddressList[ipHostInfo.AddressList.Length - 1];
             player.Connect( HostEndPoint );
             S3_ClientConnectRequestData request = new S3_ClientConnectRequestData
             {
@@ -119,7 +119,9 @@ public class S3client : MonoBehaviour
             S3_StateObject state = new S3_StateObject()
             {
                 socket = player,
-                buffer = bytesData
+                buffer = bytesData,
+                endPoint = HostEndPoint,
+                message = toSend
             };
             player.BeginSend( state.buffer, state.buffer.Length, new AsyncCallback(SendCallback), state );
         }
@@ -140,7 +142,7 @@ public class S3client : MonoBehaviour
     {
         Debug.Log( "ReceiveCallback called" );
         S3_StateObject state = (S3_StateObject)result.AsyncState;
-        byte[] data = state.socket.EndReceive( result, ref HostEndPoint );
+        byte[] data = state.socket.EndReceive( result, ref state.endPoint );
         if( data.Length > 0 )
         {
             ReceiveQueue.AddMessage( S3_MessageFormatter.BytesToGameMessage( data ) );

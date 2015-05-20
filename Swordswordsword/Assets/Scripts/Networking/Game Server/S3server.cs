@@ -122,9 +122,12 @@ public class S3server : MonoBehaviour
             byte[] bytesData = S3_MessageFormatter.GameMessageToBytes(toSend);
             S3_StateObject state = new S3_StateObject()
             {
-                socket = newsock
+                socket = newsock,
+                buffer = bytesData,
+                endPoint = PlayerEndPoints[(int)toSend.PlayerNum],
+                message = toSend
             };
-            newsock.BeginSend(bytesData, bytesData.Length, PlayerEndPoints[toSend.PlayerNum], new AsyncCallback(SendCallback), state);
+            newsock.BeginSend(bytesData, bytesData.Length, state.endPoint, new AsyncCallback(SendCallback), state);
         }
     }
 
