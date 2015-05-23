@@ -32,7 +32,7 @@ public class S3_ServerPlayerManager : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 
-        TimeOffsets = new float[] { 0f };
+		TimeOffsets = new float[] {0f, 0f, 0f, 0f};
         Players = new GameObject[4];
 	}
 	

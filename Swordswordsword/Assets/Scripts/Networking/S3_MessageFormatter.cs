@@ -131,8 +131,8 @@ public class S3_MessageFormatter  {
                 return new S3_ServerNewPlayerData
                 {
                     PlayerNum = rawData[i],
-                    PosX = rawData[i+1],
-                    PosY = rawData[i+1+sizeof(float)],
+                    PosX = BitConverter.ToSingle(rawData, i+1),
+                    PosY = BitConverter.ToSingle(rawData, i+1+sizeof(float)),
                     PlayerName = Encoding.UTF8.GetString( SubArray<byte>( rawData, i + 1 + sizeof(float) * 2, rawData.Length - (1 + sizeof(float) * 2) ) )
                 };
             case S3_GameMessageType.ClientSwing:

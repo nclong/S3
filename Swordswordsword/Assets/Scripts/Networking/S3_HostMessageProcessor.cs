@@ -121,6 +121,32 @@ public class S3_HostMessageProcessor : MonoBehaviour {
                 };
                 server.SendGameMessage( newSend );
             }
+			else
+			{
+				for(int j = 0; j < server.playerManager.CurrentPlayers; ++j)
+				{
+					if( j != i )
+					{
+						S3_ServerNewPlayerData newPlayerData = new S3_ServerNewPlayerData
+						{
+							PlayerName = "Jack",
+							PlayerNum = (byte)j,
+							PosX = server.playerManager.Players[j].transform.position.x,
+							PosY = server.playerManager.Players[j].transform.position.y
+						};
+
+						S3_GameMessage newPlayerMessage = new S3_GameMessage
+						{
+							SendTime = Time.time,
+							MessageData = newPlayerData,
+							MessageType = S3_GameMessageType.ServerNewPlayer,
+							PlayerNum = (byte)i
+						};
+
+						server.SendGameMessage(newPlayerMessage);
+					}
+				}
+			}
         }
     }
 
