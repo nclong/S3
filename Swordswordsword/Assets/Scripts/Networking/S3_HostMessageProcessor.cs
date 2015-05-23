@@ -184,7 +184,9 @@ public class S3_HostMessageProcessor : MonoBehaviour {
 
     private void HandleRotDR(S3_GameMessage message)
     {
+        
         S3_ClientRotDRData data = (S3_ClientRotDRData)( message.MessageData );
+        Debug.Log(string.Format("Received angle {0} from player {1}", data.Angle, message.PlayerNum));
         int playerNum = (int)( message.PlayerNum );
         Vector3 currentRot = server.playerManager.Players[playerNum].transform.eulerAngles;
         server.playerManager.Players[playerNum].transform.eulerAngles = new Vector3(
