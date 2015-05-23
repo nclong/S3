@@ -61,28 +61,6 @@ public class S3server : MonoBehaviour
             endPoint = sender
         };
         newsock.BeginReceive(new AsyncCallback(ReceiveCallback), state);
-
-        //Receive Thread
-        //Thread receiveThread = new Thread(delegate()
-        //{
-        //    while (true)
-        //    {
-        //        data = newsock.Receive(ref sender);
-        //        receiveQ.AddMessage(S3_MessageFormatter.BytesToGameMessage(data));
-        //    }
-        //});
-
-
-        ////Send Thread
-        //Thread sendThread = new Thread(delegate()
-        //{
-        //    while (true)
-        //    {
-        //        //determine what kind of message is the server sending
-        //    }
-        //});
-
-        //receiveThread.Start();
    
     }
 
@@ -138,30 +116,44 @@ public class S3server : MonoBehaviour
 
     private void SendCallback(IAsyncResult result)
     {
-        S3_StateObject state = (S3_StateObject)result.AsyncState;
+        S3_StateObject state = (S3_StateObject)(result.AsyncState);
         int sendResult = state.socket.EndSend( result );
         Debug.Log( "Send state: " + sendResult );
+        Debug.Log(String.Format("Sending message of type {0} to player {1}", state.message.MessageType, state.message.PlayerNum));
     }
+
     private void ReceiveCallback(IAsyncResult result)
     {
+
+
         S3_StateObject state = (S3_StateObject)result.AsyncState;
+        
         state.buffer = state.socket.EndReceive( result, ref state.endPoint );
-        if( state.buffer.Length > 0)
-        {
-            state.message = S3_MessageFormatter.BytesToGameMessage( state.buffer );
-            receiveQ.AddMessage( state.message );
-        }
-        for(int i = 0; i < state.buffer.Length; ++i )
+        Debug.Log(String.Format("Received {0}", state.buffer));
+        for (int i = 0; i < state.buffer.Length; ++i)
         {
             Debug.Log(state.buffer[i]);
         }
-
         S3_StateObject newState = new S3_StateObject()
         {
             socket = newsock,
             endPoint = sender
         };
         newsock.BeginReceive(new AsyncCallback(ReceiveCallback), newState);
+
+        Debug.Log(state.buffer.Length);
+        if (state.buffer.Length > 0)
+        {
+            state.message = S3_MessageFormatter.BytesToGameMessage(state.buffer);
+            Debug.Log(String.Format("Received message of type {0} from player {1}", state.message.MessageType, state.message.PlayerNum));
+            receiveQ.AddMessage(state.message);
+        }
+        else
+        {
+            Debug.Log("Empty Buffer Received");
+        }
+
+
     }
 }
 
