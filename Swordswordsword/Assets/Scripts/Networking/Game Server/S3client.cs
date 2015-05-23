@@ -48,7 +48,7 @@ public class S3client : MonoBehaviour
         try
         {
             IPHostEntry ipHostInfo = Dns.GetHostEntry( Dns.GetHostName() );
-            IPAddress ipAddress = ipHostInfo.AddressList[ipHostInfo.AddressList.Length - 1];
+            IPAddress ipAddress = ipHostInfo.AddressList[0];
             player.Connect( HostEndPoint );
             S3_ClientConnectRequestData request = new S3_ClientConnectRequestData
             {
@@ -61,9 +61,16 @@ public class S3client : MonoBehaviour
                 MessageType = S3_GameMessageType.ClientConnectRequest,
                 MessageData = request
             };
+
             //prepare player info to be sent to server
             gamePlayData = S3_MessageFormatter.GameMessageToBytes( message );
+            S3_StateObject state = new S3_StateObject()
+            {
+                socket = player,
+                endPoint = HostEndPoint
+            };
 
+            player.BeginReceive(new AsyncCallback(ReceiveCallback), state);
             //send info out
             player.Send( gamePlayData, gamePlayData.Length );
             Debug.Log( "Data Sent" );
@@ -71,13 +78,7 @@ public class S3client : MonoBehaviour
             //make an endpoint that is able to read anything the server sends
              ipRemoteEP = new IPEndPoint(IPAddress.Any, 0);
 
-             S3_StateObject state = new S3_StateObject()
-             {
-                 socket = player,
-                 endPoint = ipRemoteEP
-             };
-
-             player.BeginReceive( new AsyncCallback( ReceiveCallback ), state );
+             
         }
         catch (Exception e)
         {
@@ -115,7 +116,9 @@ public class S3client : MonoBehaviour
         while( !SendQueue.IsEmpty )
         {
             S3_GameMessage toSend = SendQueue.GetMessage();
+            
             byte[] bytesData = S3_MessageFormatter.GameMessageToBytes( toSend );
+            
             S3_StateObject state = new S3_StateObject()
             {
                 socket = player,
@@ -123,6 +126,7 @@ public class S3client : MonoBehaviour
                 endPoint = HostEndPoint,
                 message = toSend
             };
+            
             player.BeginSend( state.buffer, state.buffer.Length, new AsyncCallback(SendCallback), state );
         }
     }
@@ -136,24 +140,36 @@ public class S3client : MonoBehaviour
     {
         S3_StateObject state = (S3_StateObject)result.AsyncState;
         int sendResult = state.socket.EndSend( result );
+        if( state.message.MessageType == S3_GameMessageType.ClientRotDR)
+        {
+            for(int i = 0; i < state.buffer.Length; ++i)
+            {
+                Debug.Log(state.buffer[i]);
+            }
+        }
+        Debug.Log(String.Format("Sent message of type {0}", state.message.MessageType));
         Debug.Log( "Send state: " + sendResult );
+        Debug.Log("Buffer Size: " + state.buffer.Length);
     }
     private void ReceiveCallback( IAsyncResult result )
     {
         Debug.Log( "ReceiveCallback called" );
         S3_StateObject state = (S3_StateObject)result.AsyncState;
-        byte[] data = state.socket.EndReceive( result, ref state.endPoint );
-        if( data.Length > 0 )
-        {
-            ReceiveQueue.AddMessage( S3_MessageFormatter.BytesToGameMessage( data ) );
-        }
-
+        state.buffer = state.socket.EndReceive( result, ref state.endPoint );
         S3_StateObject newState = new S3_StateObject()
         {
             socket = player,
-            endPoint = ipRemoteEP
+            endPoint = HostEndPoint
         };
 
-        player.BeginReceive( new AsyncCallback( ReceiveCallback ), newState );
+        player.BeginReceive(new AsyncCallback(ReceiveCallback), newState);
+        if( state.buffer.Length > 0 )
+        {
+            state.message = S3_MessageFormatter.BytesToGameMessage(state.buffer);
+            ReceiveQueue.AddMessage( state.message );
+            Debug.Log(String.Format("Received message of type {0}", state.message.MessageType ));
+        }
+
+
     }
 }

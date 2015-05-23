@@ -29,21 +29,24 @@ public class S3_DeadReckoning : MonoBehaviour {
         Velocity = PlayerRB.velocity;
         transform.position = Player.transform.position;
         transform.eulerAngles = new Vector3( 0f, 0f, Mathf.Atan2( Velocity.y, Velocity.x ) * Mathf.Rad2Deg );
-        S3_ClientPosDRData data = new S3_ClientPosDRData
+        if ( Client.PlayerNum != 255)
         {
-            DRPosX = transform.position.x,
-            DRPosY = transform.position.y,
-            DRVelX = PlayerRB.velocity.x,
-            DRVelY = PlayerRB.velocity.y
-        };
-        S3_GameMessage message = new S3_GameMessage
-        {
-            PlayerNum = (byte)(Client.PlayerNum),
-            SendTime = S3_ServerTime.ServerTime,
-            MessageType = S3_GameMessageType.ClientPosDR,
-            MessageData = data
-        };
-        Client.SendGameMessage( message );
+            S3_ClientPosDRData data = new S3_ClientPosDRData
+            {
+                DRPosX = transform.position.x,
+                DRPosY = transform.position.y,
+                DRVelX = PlayerRB.velocity.x,
+                DRVelY = PlayerRB.velocity.y
+            };
+            S3_GameMessage message = new S3_GameMessage
+            {
+                PlayerNum = (byte)(Client.PlayerNum),
+                SendTime = S3_ServerTime.ServerTime,
+                MessageType = S3_GameMessageType.ClientPosDR,
+                MessageData = data
+            };
+            Client.SendGameMessage(message); 
+        }
     }
 
     void OnTriggerExit2D(Collider2D collider)
