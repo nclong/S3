@@ -24,5 +24,21 @@ public class S3_RotDeadReckoning : MonoBehaviour {
     void UpdateDR()
     {
         Angle = Player.transform.eulerAngles.z;
+        if (client.PlayerNum != 255 )
+        {
+            S3_ClientRotDRData data = new S3_ClientRotDRData
+            {
+                Angle = Angle
+            };
+            S3_GameMessage message = new S3_GameMessage
+            {
+                PlayerNum = (byte)(client.PlayerNum),
+                SendTime = S3_ServerTime.ServerTime,
+                MessageType = S3_GameMessageType.ClientRotDR,
+                MessageData = data
+            };
+
+            client.SendGameMessage(message); 
+        }
     }
 }
