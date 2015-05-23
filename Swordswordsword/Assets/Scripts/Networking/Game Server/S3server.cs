@@ -129,7 +129,6 @@ public class S3server : MonoBehaviour
         S3_StateObject state = (S3_StateObject)result.AsyncState;
         
         state.buffer = state.socket.EndReceive( result, ref state.endPoint );
-        Debug.Log(String.Format("Received {0}", state.buffer));
         for (int i = 0; i < state.buffer.Length; ++i)
         {
             Debug.Log(state.buffer[i]);
@@ -141,7 +140,6 @@ public class S3server : MonoBehaviour
         };
         newsock.BeginReceive(new AsyncCallback(ReceiveCallback), newState);
 
-        Debug.Log(state.buffer.Length);
         if (state.buffer.Length > 0)
         {
             state.message = S3_MessageFormatter.BytesToGameMessage(state.buffer);
