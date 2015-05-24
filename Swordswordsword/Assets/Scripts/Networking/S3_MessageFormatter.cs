@@ -91,10 +91,10 @@ public class S3_MessageFormatter  {
             case S3_GameMessageType.ClientPosDR:
                 return new S3_ClientPosDRData
                 {
-                    DRPosX = BitConverter.ToSingle( rawData, i + sizeof( float ) * 1 ),
-                    DRPosY = BitConverter.ToSingle( rawData, i + sizeof( float ) * 2 ),
-                    DRVelX = BitConverter.ToSingle( rawData, i + sizeof( float ) * 3 ),
-                    DRVelY = BitConverter.ToSingle( rawData, i + sizeof( float ) * 4 )
+                    DRPosX = BitConverter.ToSingle( rawData, i + sizeof( float ) * 0 ),
+                    DRPosY = BitConverter.ToSingle( rawData, i + sizeof( float ) * 1 ),
+                    DRVelX = BitConverter.ToSingle( rawData, i + sizeof( float ) * 2 ),
+                    DRVelY = BitConverter.ToSingle( rawData, i + sizeof( float ) * 3 )
                 };
             case S3_GameMessageType.ClientRotDR:
                 return new S3_ClientRotDRData
@@ -131,8 +131,8 @@ public class S3_MessageFormatter  {
                 return new S3_ServerNewPlayerData
                 {
                     PlayerNum = rawData[i],
-                    PosX = rawData[i+1],
-                    PosY = rawData[i+1+sizeof(float)],
+                    PosX = BitConverter.ToSingle(rawData, i+1),
+                    PosY = BitConverter.ToSingle(rawData, i+1+sizeof(float)),
                     PlayerName = Encoding.UTF8.GetString( SubArray<byte>( rawData, i + 1 + sizeof(float) * 2, rawData.Length - (1 + sizeof(float) * 2) ) )
                 };
             case S3_GameMessageType.ClientSwing:
