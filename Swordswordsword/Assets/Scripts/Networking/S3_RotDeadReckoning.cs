@@ -24,7 +24,7 @@ public class S3_RotDeadReckoning : MonoBehaviour {
     void UpdateDR()
     {
         Angle = Player.transform.eulerAngles.z;
-        if (client.PlayerNum != 255 )
+        if (client.PlayerNum != 255 && client.PlayerNum != -1 )
         {
             S3_ClientRotDRData data = new S3_ClientRotDRData
             {
