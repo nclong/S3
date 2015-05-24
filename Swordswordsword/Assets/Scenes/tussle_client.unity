@@ -332,7 +332,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Player: {fileID: 506990885}
---- !u!1 &506990885
+--- !u!1 &506990885 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 124880, guid: cee930e0c13bd6e488289482bb467818, type: 2}
   m_PrefabInternal: {fileID: 1493042294}
@@ -967,6 +967,10 @@ Prefab:
       propertyPath: m_RootOrder
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 11424524, guid: cee930e0c13bd6e488289482bb467818, type: 2}
+      propertyPath: ClientObject
+      value: 
+      objectReference: {fileID: 1338693472}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cee930e0c13bd6e488289482bb467818, type: 2}
   m_IsPrefabParent: 0
