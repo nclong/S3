@@ -192,8 +192,7 @@ public class S3_HostMessageProcessor : MonoBehaviour {
                     DRPosX = posDRData.DRPosX,
                     DRPosY = posDRData.DRPosY,
                     DRVelX = posDRData.DRVelX,
-                    DRVelY = posDRData.DRVelY,
-                    DRAngle = 0f
+                    DRVelY = posDRData.DRVelY
                 };
                 S3_GameMessage toSend = new S3_GameMessage
                 {
@@ -212,7 +211,6 @@ public class S3_HostMessageProcessor : MonoBehaviour {
     {
         
         S3_ClientRotDRData data = (S3_ClientRotDRData)( message.MessageData );
-        Debug.Log(string.Format("Received angle {0} from player {1}", data.Angle, message.PlayerNum));
         int playerNum = (int)( message.PlayerNum );
         Vector3 currentRot = server.playerManager.Players[playerNum].transform.eulerAngles;
         server.playerManager.Players[playerNum].transform.eulerAngles = new Vector3(

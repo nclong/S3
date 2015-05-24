@@ -72,13 +72,12 @@ public class S3_MessageFormatter  {
 
                 return new S3_ServerPlayerPosDRData
                 {
-                    DRAngle = BitConverter.ToSingle( rawData, i ),
-                    DRPosX = BitConverter.ToSingle( rawData, i + sizeof( float ) * 1 ),
-                    DRPosY = BitConverter.ToSingle( rawData, i + sizeof( float ) * 2 ),
-                    DRVelX = BitConverter.ToSingle( rawData, i + sizeof( float ) * 3 ),
-                    DRVelY = BitConverter.ToSingle( rawData, i + sizeof( float ) * 4 ),
-                    InitialTime = BitConverter.ToSingle( rawData, i + sizeof( float ) * 5 ),
-                    PlayerNum = rawData[i + sizeof( float ) * 6]
+                    DRPosX = BitConverter.ToSingle( rawData, i + sizeof( float ) * 0 ),
+                    DRPosY = BitConverter.ToSingle( rawData, i + sizeof( float ) * 1 ),
+                    DRVelX = BitConverter.ToSingle( rawData, i + sizeof( float ) * 2 ),
+                    DRVelY = BitConverter.ToSingle( rawData, i + sizeof( float ) * 3 ),
+                    InitialTime = BitConverter.ToSingle( rawData, i + sizeof( float ) * 4 ),
+                    PlayerNum = rawData[i + sizeof( float ) * 5]
                 };
 
             case S3_GameMessageType.ServerPlayerRotDR:
