@@ -47,6 +47,8 @@ public class S3_ClientMessageProcessor : MonoBehaviour {
             case S3_GameMessageType.ServerGunswordPos:
             case S3_GameMessageType.ServerGunswordRot:
             case S3_GameMessageType.ServerGunswordHit:
+            case S3_GameMessageType.ServerDisconnectAck:
+                HandleServerDeletePlayer(message); break;//KTZ
             default:
                 break;
         }
@@ -150,7 +152,10 @@ public class S3_ClientMessageProcessor : MonoBehaviour {
     
     }
 
-
+    private void HandleServerDeletePlayer(S3_GameMessage message)
+    { 
+    
+    }
 
 
 

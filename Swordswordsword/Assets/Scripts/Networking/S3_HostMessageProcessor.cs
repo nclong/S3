@@ -47,6 +47,8 @@ public class S3_HostMessageProcessor : MonoBehaviour {
             case S3_GameMessageType.ServerGunswordPos:
             case S3_GameMessageType.ServerGunswordRot:
             case S3_GameMessageType.ServerGunswordHit:
+            case S3_GameMessageType.ClientDisconnectMsg:
+                HandleDisconnect(message); break; //KTZ
             default:
                 break;
         }
@@ -292,6 +294,12 @@ public class S3_HostMessageProcessor : MonoBehaviour {
     }
 
     private void HandleSwitch(S3_GameMessage message)
+    {
+        return;
+    }
+
+    //KTZ
+    private void HandleDisconnect(S3_GameMessage message)
     {
         return;
     }
