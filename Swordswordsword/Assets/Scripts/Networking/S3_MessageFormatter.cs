@@ -143,12 +143,16 @@ public class S3_MessageFormatter  {
                 {
                     Victor = 0
                 };
-            case S3_GameMessageType.ServerSwordzookaPos:
+            case S3_GameMessageType.ServerDisconnectAck:
+                return new S3_ServerDisconnectAck { };
+            case S3_GameMessageType.ClientDisconnectMsg:
+                return new S3_ClientDisconnectMsg { };
+            /*case S3_GameMessageType.ServerSwordzookaPos:
             case S3_GameMessageType.ServerSwordzookaRot:
             case S3_GameMessageType.ServerSwordzookaHit:
             case S3_GameMessageType.ServerGunswordPos:
             case S3_GameMessageType.ServerGunswordRot:
-            case S3_GameMessageType.ServerGunswordHit:
+            case S3_GameMessageType.ServerGunswordHit:*/
             default:
                 throw new DataMisalignedException();
         }
@@ -230,12 +234,16 @@ public class S3_MessageFormatter  {
                 return new byte[1] { 0 };
             case S3_GameMessageType.ServerGameOver:
                 return new byte[1] { ((S3_ServerGameOverData)(message.MessageData)).Victor };
-            case S3_GameMessageType.ServerSwordzookaPos:
+            case S3_GameMessageType.ServerDisconnectAck:
+                return new byte[1] { 0 };
+            case S3_GameMessageType.ClientDisconnectMsg:
+                return new byte[1] { 0 };
+            /*case S3_GameMessageType.ServerSwordzookaPos:
             case S3_GameMessageType.ServerSwordzookaRot:
             case S3_GameMessageType.ServerSwordzookaHit:
             case S3_GameMessageType.ServerGunswordPos:
             case S3_GameMessageType.ServerGunswordRot:
-            case S3_GameMessageType.ServerGunswordHit:
+            case S3_GameMessageType.ServerGunswordHit:*/
             default:
                 return new byte[1] { 0 };
         }

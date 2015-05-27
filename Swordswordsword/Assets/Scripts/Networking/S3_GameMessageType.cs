@@ -24,5 +24,7 @@
     ServerSwordzookaHit,
     ServerGunswordPos,
     ServerGunswordRot,
-    ServerGunswordHit
+    ServerGunswordHit,
+    ServerDisconnectAck,
+    ClientDisconnectMsg
 }
