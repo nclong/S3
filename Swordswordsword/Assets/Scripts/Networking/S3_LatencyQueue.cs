@@ -24,23 +24,23 @@ public class S3_LatencyQueue {
 	public int GetMeanI()
 	{
 		int count = 0;
-		int sum = 0;
-		foreach (int i in latencyQueue) {
+		float sum = 0;
+		foreach (float i in latencyQueue) {
 			sum += i;
 			count++;
 		}
-		float average = (float)sum / (float)count;
+		float average = sum / (float)count;
 		return Mathf.RoundToInt (average * 1000) ;
 	}
 
 	public float GetMeanF()
 	{
 		int count = 0;
-		int sum = 0;
-		foreach (int i in latencyQueue) {
+		float sum = 0;
+		foreach (float i in latencyQueue) {
 			sum += i;
 			count++;
 		}
-		return (float)sum / (float)count;
+		return sum / (float)count;
 	}
 }

@@ -20,11 +20,13 @@ public class S3_ClientDisconnectButton : MonoBehaviour {
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
+			S3_ClientDisconnectMsg data = new S3_ClientDisconnectMsg();
             S3_GameMessage DCMsg = new S3_GameMessage
             {
                 PlayerNum = (byte)(Client.PlayerNum),
                 SendTime = S3_ServerTime.ServerTime,
-                MessageType = S3_GameMessageType.ClientDisconnectMsg
+                MessageType = S3_GameMessageType.ClientDisconnectMsg,
+				MessageData = data
             };
             client.SendGameMessage(DCMsg);
         }

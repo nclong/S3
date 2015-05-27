@@ -154,7 +154,7 @@ public class S3_ClientMessageProcessor : MonoBehaviour {
 
     private void HandleServerDeletePlayer(S3_GameMessage message)
     { 
-    
+		Application.Quit ();
     }
 
 

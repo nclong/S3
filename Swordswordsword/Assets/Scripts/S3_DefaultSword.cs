@@ -4,7 +4,7 @@ using System.Collections;
 public class S3_DefaultSword : MonoBehaviour {
     public int Damage;
 	public GameObject ServerObject;
-	public GameObject GameManager;
+	public GameObject PlayerManagerObject;
 	private bool IsServer;
 
 	private S3_GameManager gameManager;
@@ -13,9 +13,9 @@ public class S3_DefaultSword : MonoBehaviour {
 	void Start () {
 		ServerObject = GameObject.Find ("ServerObject");
 		IsServer = ServerObject != null;
-		GameManager = GameObject.Find ("GameManager");
-		if (GameManager != null) {
-			gameManager = GameManager.GetComponent<S3_GameManager>();
+		PlayerManagerObject = GameObject.Find ("ServerPlayerManager");
+		if (IsServer) {
+			gameManager = PlayerManagerObject.GetComponent<S3_GameManager>();
 		}
 	}
 	

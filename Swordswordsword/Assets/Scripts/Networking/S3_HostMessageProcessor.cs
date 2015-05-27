@@ -266,6 +266,7 @@ public class S3_HostMessageProcessor : MonoBehaviour {
 			};
 			server.SendGameMessage(SpawnMessage);
 			server.playerManager.Players [swingingPlayer].GetComponent<S3_PlayerProperties> ().dead = false;
+			server.playerManager.Players [swingingPlayer].GetComponent<PolygonCollider2D>().enabled = true;
 		}
 
 		else {
@@ -301,6 +302,16 @@ public class S3_HostMessageProcessor : MonoBehaviour {
     //KTZ
     private void HandleDisconnect(S3_GameMessage message)
     {
+		server.playerManager.RemovePlayer ((int)message.PlayerNum);
+		S3_ServerDisconnectAck data = new S3_ServerDisconnectAck ();
+		S3_GameMessage toSend = new S3_GameMessage
+		{
+			PlayerNum = message.PlayerNum,
+			SendTime = Time.time,
+			MessageData = data,
+			MessageType = S3_GameMessageType.ServerDisconnectAck
+		};
+		server.SendGameMessage(toSend);
         return;
     }
 }

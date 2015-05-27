@@ -43,6 +43,7 @@ public class S3_PlayerProperties : MonoBehaviour {
 				};
 
 				ServerObject.GetComponent<S3server>().SendGameMessage(message);
+				GetComponent<PolygonCollider2D>().enabled = false;
 			}
 
 			Debug.Log ("Dead Player.");
