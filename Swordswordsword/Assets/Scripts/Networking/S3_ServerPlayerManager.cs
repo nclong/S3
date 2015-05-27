@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 
 public class S3_ServerPlayerManager : MonoBehaviour {
 	private const float CLIENT_TIMEOUT = 60000;
@@ -8,7 +9,6 @@ public class S3_ServerPlayerManager : MonoBehaviour {
 	public GameObject PlayerPrefab;
     private const int Player_Max = 4;
     private int currentPlayerCount = 0;
-	private int firstAvailableSlot = 0;
 
     public int CurrentPlayers
     {
@@ -17,6 +17,9 @@ public class S3_ServerPlayerManager : MonoBehaviour {
             return currentPlayerCount;
         }
     }
+	public IPEndPoint[] PlayerEndPoints;
+	public string[] PlayerNames;
+	public bool[] TimeRequestSent;
     public GameObject[] SpawnPoints;
     public float[] TimeOffsets;
 	public S3_LatencyQueue[] Latencies;
@@ -43,6 +46,9 @@ public class S3_ServerPlayerManager : MonoBehaviour {
 		TimeoutCounter = new float[] {0f, 0f, 0f, 0f};
         Players = new GameObject[4];
 		Latencies = new S3_LatencyQueue[4];
+		PlayerEndPoints = new IPEndPoint[4];
+		PlayerNames = new string[4];
+		TimeRequestSent = new bool[] {true, true, true, true};
 	}
 	
 	// Update is called once per frame
@@ -61,7 +67,7 @@ public class S3_ServerPlayerManager : MonoBehaviour {
 	
 	}
 
-    public int CreatePlayer()
+    public int CreatePlayer(IPEndPoint PlayerEndPoint)
     {
         if( currentPlayerCount >= Player_Max )
         {
@@ -69,8 +75,13 @@ public class S3_ServerPlayerManager : MonoBehaviour {
         }
         Players[currentPlayerCount] = Instantiate<GameObject>( PlayerPrefab );
         Players[currentPlayerCount].transform.position = SpawnPoints[currentPlayerCount].transform.position;
-
-        return currentPlayerCount++;
+		TimeOffsets [currentPlayerCount] = 0f;
+		TimeoutCounter [currentPlayerCount] = 0f;
+		PlayerEndPoints [currentPlayerCount] = PlayerEndPoint;
+		PlayerNames [currentPlayerCount] = string.Empty;
+		TimeRequestSent [currentPlayerCount] = true;
+		Latencies [currentPlayerCount] = new S3_LatencyQueue ();
+		return currentPlayerCount++;
     }
 
     public float calculateLatency(int PlayerNum)
@@ -85,7 +96,7 @@ public class S3_ServerPlayerManager : MonoBehaviour {
 
 	public int GetPing(int PlayerNum)
 	{
-		Latencies [PlayerNum].GetMeanI ();
+		return Latencies [PlayerNum].GetMeanI ();
 	}
 
 	public void RemovePlayer(int PlayerToRemove)
@@ -101,12 +112,13 @@ public class S3_ServerPlayerManager : MonoBehaviour {
 
 			if (toRemoveReached && i+1 < currentPlayerCount)
 			{
+				TimeOffsets[i] = TimeOffsets[i+1];
+				TimeoutCounter[i] = TimeoutCounter[i+1];
+				Latencies[i] = Latencies[i+1];
 				Players[i] = Players[i+1];
-				firstAvailableSlot = i+1;
-			}
-			else if (toRemoveReached && i+1 >= currentPlayerCount)
-			{
-				firstAvailableSlot = i;
+				PlayerEndPoints[i] = PlayerEndPoints[i+1];
+				PlayerNames[i] = PlayerNames[i+1];
+				TimeRequestSent[i] = TimeRequestSent[i+1];
 			}
 		}
 

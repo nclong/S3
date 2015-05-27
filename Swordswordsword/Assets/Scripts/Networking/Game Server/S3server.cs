@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -36,17 +36,12 @@ public class S3server : MonoBehaviour
 
     S3_HostMessageProcessor messageProcessor;
 
-    public IPEndPoint[] PlayerEndPoints;
-    public string[] PlayerNames;
 
-	public bool[] TimeRequestSent;
 
     void Start()
     {
         messageProcessor = GetComponent<S3_HostMessageProcessor>();
         playerManager = ServerPlayerManagerObj.GetComponent<S3_ServerPlayerManager>();
-        PlayerEndPoints = new IPEndPoint[4];
-        PlayerNames = new string[4];
 
         data = new byte[1024];
         ep = new IPEndPoint(IPAddress.Any, 3500);
@@ -63,8 +58,6 @@ public class S3server : MonoBehaviour
             endPoint = sender
         };
         newsock.BeginReceive(new AsyncCallback(ReceiveCallback), state);
-
-		TimeRequestSent = new bool[]{true, true, true, true} 
    
     }
 
@@ -83,7 +76,6 @@ public class S3server : MonoBehaviour
         SendMessages();
         ReadMessages();
 		SendTimeUpdates ();
-
     }
 
     void LateUpdate()
@@ -93,12 +85,12 @@ public class S3server : MonoBehaviour
 	void SendTimeUpdates()
 	{
 		for (int i = 0; i < playerManager.CurrentPlayers; ++i) {
-			if(!TimeRequestSent[i])
+			if(!playerManager.TimeRequestSent[i])
 			{
 				playerManager.TimeOffsets[i] = Time.time;
 				S3_ServerTimeData data = new S3_ServerTimeData
 				{
-					playerManager.TimeOffsets[i]
+					time = playerManager.TimeOffsets[i]
 				};
 				S3_GameMessage message = new S3_GameMessage
 				{
@@ -109,7 +101,7 @@ public class S3server : MonoBehaviour
 				};
 				
 				SendGameMessage(message);
-				TimeRequestSent[i] = true;
+				playerManager.TimeRequestSent[i] = true;
 			}
 		}
 	}
@@ -132,7 +124,7 @@ public class S3server : MonoBehaviour
             {
                 socket = newsock,
                 buffer = bytesData,
-                endPoint = PlayerEndPoints[(int)toSend.PlayerNum],
+                endPoint = playerManager.PlayerEndPoints[(int)toSend.PlayerNum],
                 message = toSend
             };
             newsock.BeginSend(bytesData, bytesData.Length, state.endPoint, new AsyncCallback(SendCallback), state);

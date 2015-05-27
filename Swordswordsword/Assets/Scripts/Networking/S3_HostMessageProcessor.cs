@@ -60,9 +60,8 @@ public class S3_HostMessageProcessor : MonoBehaviour {
         if( server.playerManager.HasRoom)
         {
             responseData.acceptance = true;
-            server.PlayerEndPoints[playerNum] = new IPEndPoint( new IPAddress( requestData.ip ), 3501 );
-            server.PlayerNames[playerNum] = requestData.playerName;
-            server.playerManager.CreatePlayer();
+			server.playerManager.CreatePlayer(new IPEndPoint( new IPAddress( requestData.ip ), 3501 ));
+            server.playerManager.PlayerNames[playerNum] = requestData.playerName;
             server.playerManager.Players[playerNum].transform.position =
                 server.playerManager.SpawnPoints[playerNum].transform.position;
 
@@ -170,7 +169,7 @@ public class S3_HostMessageProcessor : MonoBehaviour {
         };
 
         server.SendGameMessage( toSend );
-		server.TimeRequestSent [(int)(message.PlayerNum)] = false;
+		server.playerManager.TimeRequestSent [(int)(message.PlayerNum)] = false;
     }
 
     private void HandlePosDR(S3_GameMessage message)
