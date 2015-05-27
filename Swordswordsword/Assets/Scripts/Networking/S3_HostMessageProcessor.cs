@@ -302,8 +302,10 @@ public class S3_HostMessageProcessor : MonoBehaviour {
     //KTZ
     private void HandleDisconnect(S3_GameMessage message)
     {
-		server.playerManager.RemovePlayer ((int)message.PlayerNum);
-		S3_ServerDisconnectAck data = new S3_ServerDisconnectAck ();
+		S3_ServerDisconnectAck data = new S3_ServerDisconnectAck
+		{
+			PlayerNum = message.PlayerNum
+		};
 		S3_GameMessage toSend = new S3_GameMessage
 		{
 			PlayerNum = message.PlayerNum,
@@ -312,6 +314,8 @@ public class S3_HostMessageProcessor : MonoBehaviour {
 			MessageType = S3_GameMessageType.ServerDisconnectAck
 		};
 		server.SendGameMessage(toSend);
+		server.playerManager.RemovePlayer ((int)message.PlayerNum);
+
         return;
     }
 }

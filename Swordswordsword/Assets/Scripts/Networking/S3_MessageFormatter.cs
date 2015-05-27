@@ -144,9 +144,9 @@ public class S3_MessageFormatter  {
                     Victor = 0
                 };
             case S3_GameMessageType.ServerDisconnectAck:
-                return new S3_ServerDisconnectAck { };
+                return new S3_ServerDisconnectAck { PlayerNum = 0 };
             case S3_GameMessageType.ClientDisconnectMsg:
-                return new S3_ClientDisconnectMsg { };
+                return new S3_ClientDisconnectMsg { PlayerNum = 0 };
             /*case S3_GameMessageType.ServerSwordzookaPos:
             case S3_GameMessageType.ServerSwordzookaRot:
             case S3_GameMessageType.ServerSwordzookaHit:
