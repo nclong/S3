@@ -235,9 +235,9 @@ public class S3_MessageFormatter  {
             case S3_GameMessageType.ServerGameOver:
                 return new byte[1] { ((S3_ServerGameOverData)(message.MessageData)).Victor };
             case S3_GameMessageType.ServerDisconnectAck:
-                return new byte[1] { 0 };
+                return new byte[1] { 0 }; //KTZ
             case S3_GameMessageType.ClientDisconnectMsg:
-                return new byte[1] { 0 };
+                return new byte[1] { 0 }; //KTZ
             /*case S3_GameMessageType.ServerSwordzookaPos:
             case S3_GameMessageType.ServerSwordzookaRot:
             case S3_GameMessageType.ServerSwordzookaHit:
