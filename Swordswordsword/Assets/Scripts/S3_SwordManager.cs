@@ -23,35 +23,35 @@ public class S3_SwordManager : MonoBehaviour {
 
         swordDict = new Dictionary<string, MonoBehaviour>();
         swordDict["default"] = GetComponent<S3_DefaultSword>();
-        swordDict["dummy"] = GetComponent<S3_DummySword>();
-        swordDict["dummy"].enabled = false;
-        swordDict["gun"] = GetComponent<S3_GunSword>();
-        swordDict["gun"].enabled = false;
-        swordDict["laser"] = GetComponent<S3_SwordLaser>();
-        swordDict["laser"].enabled = false;
-        swordDict["swordzooka"] = GetComponent<S3_SwordZooka>();
-        swordDict["swordzooka"].enabled = false;
+//        swordDict["dummy"] = GetComponent<S3_DummySword>();
+//        swordDict["dummy"].enabled = false;
+//        swordDict["gun"] = GetComponent<S3_GunSword>();
+//        swordDict["gun"].enabled = false;
+//        swordDict["laser"] = GetComponent<S3_SwordLaser>();
+//        swordDict["laser"].enabled = false;
+//        swordDict["swordzooka"] = GetComponent<S3_SwordZooka>();
+//        swordDict["swordzooka"].enabled = false;
 
         spriteDict = new Dictionary<string, Sprite>();
         spriteDict["default"] = DefaultSprite;
-        spriteDict["gun"] = GunSprite;
-        spriteDict["laser"] = LaserSprite;
-        spriteDict["swordzooka"] = SwordzookaSprite;
+//        spriteDict["gun"] = GunSprite;
+//        spriteDict["laser"] = LaserSprite;
+//        spriteDict["swordzooka"] = SwordzookaSprite;
 
         sr = GetComponent<SpriteRenderer>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        if( Input.GetButton("Switch") )
-        {
-            switchPressed = true;
-        }
-        else
-        {
-            switchPressed = false;
-            switchReleased = true;
-        }
+//        if( Input.GetButton("Switch") )
+//        {
+//            switchPressed = true;
+//        }
+//        else
+//        {
+//            switchPressed = false;
+//            switchReleased = true;
+//        }
 
         if( switchPressed && switchReleased)
         {
