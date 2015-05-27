@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class S3_ServerDisconnectAck
+public class S3_ServerDisconnectAck : IMessageData
 {
 
 }
