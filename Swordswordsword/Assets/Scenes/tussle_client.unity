@@ -419,6 +419,7 @@ MonoBehaviour:
   BloodEmitter: {fileID: 173566, guid: cee930e0c13bd6e488289482bb467818, type: 2}
   PlayerName: 
   ServerObject: {fileID: 0}
+  PlayerNumber: 0
   dead: 0
 --- !u!1 &651893733
 GameObject:

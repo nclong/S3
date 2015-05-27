@@ -3,17 +3,12 @@ using System.Collections;
 
 public class S3_ClientDisconnectButton : MonoBehaviour {
 
-    public GameObject Player;
-    public GameObject ClientObject;
-
-    public S3client client;
     private Rigidbody2D PlayerRB;
     private S3client Client;
 
     void Start()
     {
-        PlayerRB = Player.GetComponent<Rigidbody2D>();
-        Client = ClientObject.GetComponent<S3client>();
+        Client = GameObject.Find ("ClientObject").GetComponent<S3client>();
     }
 
 	void Update () 
@@ -28,7 +23,7 @@ public class S3_ClientDisconnectButton : MonoBehaviour {
                 MessageType = S3_GameMessageType.ClientDisconnectMsg,
 				MessageData = data
             };
-            client.SendGameMessage(DCMsg);
+			Client.SendGameMessage(DCMsg);
         }
 	}
 
