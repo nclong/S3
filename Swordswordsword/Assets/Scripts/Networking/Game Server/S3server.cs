@@ -39,6 +39,8 @@ public class S3server : MonoBehaviour
     public IPEndPoint[] PlayerEndPoints;
     public string[] PlayerNames;
 
+	public bool[] TimeRequestSent;
+
     void Start()
     {
         messageProcessor = GetComponent<S3_HostMessageProcessor>();
@@ -61,6 +63,8 @@ public class S3server : MonoBehaviour
             endPoint = sender
         };
         newsock.BeginReceive(new AsyncCallback(ReceiveCallback), state);
+
+		TimeRequestSent = new bool[]{true, true, true, true} 
    
     }
 
@@ -78,11 +82,37 @@ public class S3server : MonoBehaviour
         //SendMessages if there are any
         SendMessages();
         ReadMessages();
+		SendTimeUpdates ();
+
     }
 
     void LateUpdate()
     {
     }
+
+	void SendTimeUpdates()
+	{
+		for (int i = 0; i < playerManager.CurrentPlayers; ++i) {
+			if(!TimeRequestSent[i])
+			{
+				playerManager.TimeOffsets[i] = Time.time;
+				S3_ServerTimeData data = new S3_ServerTimeData
+				{
+					playerManager.TimeOffsets[i]
+				};
+				S3_GameMessage message = new S3_GameMessage
+				{
+					PlayerNum = (byte)i,
+					SendTime = playerManager.TimeOffsets[i],
+					MessageData = data,
+					MessageType = S3_GameMessageType.ServerTime
+				};
+				
+				SendGameMessage(message);
+				TimeRequestSent[i] = true;
+			}
+		}
+	}
     
     void ReadMessages()
     {

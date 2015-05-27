@@ -12,6 +12,8 @@ public class S3_HostMessageProcessor : MonoBehaviour {
     }
 	public void ProcessMessage(S3_GameMessage message)
     {
+		server.playerManager.TimeoutCounter [(int)message.PlayerNum] = 0f;
+
         switch(message.MessageType)
         {
             case S3_GameMessageType.ClientConnectRequest:
@@ -153,11 +155,11 @@ public class S3_HostMessageProcessor : MonoBehaviour {
     private void HandleTimeReceived(S3_GameMessage message)
     {
         //needs to be divided by 2
-        server.playerManager.TimeOffsets[(int)( message.PlayerNum )] = Time.time - server.playerManager.TimeOffsets[(int)( message.PlayerNum )];
+        server.playerManager.AddLatency((int)( message.PlayerNum ), (Time.time - server.playerManager.TimeOffsets[(int)( message.PlayerNum )]) / 2f);
 
         S3_ServerTimeOffsetData data = new S3_ServerTimeOffsetData
         {
-            offset = server.playerManager.TimeOffsets[(int)( message.PlayerNum )]
+			offset = server.playerManager.calculateLatency((int)( message.PlayerNum ))
         };
         S3_GameMessage toSend = new S3_GameMessage
         {
@@ -168,6 +170,7 @@ public class S3_HostMessageProcessor : MonoBehaviour {
         };
 
         server.SendGameMessage( toSend );
+		server.TimeRequestSent [(int)(message.PlayerNum)] = false;
     }
 
     private void HandlePosDR(S3_GameMessage message)
