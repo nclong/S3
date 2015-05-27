@@ -14,6 +14,7 @@ public class S3_CharacterMovement : MonoBehaviour {
     private bool dashReleased = true;
     public bool dashing = false;
     private Vector2 dashDirection;
+	public bool dead = false;
 	// Use this for initialization
 	void Start () {
         rb2D = GetComponent<Rigidbody2D>();
@@ -21,56 +22,46 @@ public class S3_CharacterMovement : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if( Input.GetButton("Dash") )
-        {
-            dashPressed = true;
-        }
-        else
-        {
-            dashReleased = true;
-            dashPressed = false;
-        }
-
-        if( dashPressed && dashReleased )
-        {
-            S3_SoundManager.DashSound.Play();
-            dashReleased = false;
-            dashing = true;
-            dashDirection = new Vector2( Input.GetAxis( "Horizontal" ), Input.GetAxis( "Vertical" ) ).normalized;
-            if (dashDirection == Vector2.zero )
-            {
-                dashDirection = ( Camera.main.ScreenToWorldPoint( Input.mousePosition ) - transform.position ).normalized;
-            }
-        }
-
-        if( !dashing )
-        {
-            rb2D.velocity = new Vector2( Input.GetAxis( "Horizontal" ), Input.GetAxis( "Vertical" ) ).normalized * MaxSpeed;
-
-            Vector3 MouseInWorld = Camera.main.ScreenToWorldPoint( Input.mousePosition );
-            Vector3 PlayerToMouse = MouseInWorld - transform.position;
-            transform.eulerAngles = new Vector3( transform.eulerAngles.x, transform.eulerAngles.y, Mathf.Atan2( PlayerToMouse.y, PlayerToMouse.x ) * Mathf.Rad2Deg ); 
-        }
-        else
-        {
-            dashTimer += Time.deltaTime;
-            dashCooldownTimer += Time.deltaTime;
-            if( dashTimer >= dashTime )
-            {
-                rb2D.velocity = Vector2.zero;
-            }
-            else
-            {
-                rb2D.velocity = dashDirection * dashSpeed;
-            }
-
-            if( dashCooldownTimer >= dashCooldown )
-            {
-                dashTimer = 0f;
-                dashing = false;
-                dashCooldownTimer = 0f;
-            }
-        }
+        if (!dead) {
+			if (Input.GetButton ("Dash")) {
+				dashPressed = true;
+			} else {
+				dashReleased = true;
+				dashPressed = false;
+			}
+        	
+			if (dashPressed && dashReleased) {
+				S3_SoundManager.DashSound.Play ();
+				dashReleased = false;
+				dashing = true;
+				dashDirection = new Vector2 (Input.GetAxis ("Horizontal"), Input.GetAxis ("Vertical")).normalized;
+				if (dashDirection == Vector2.zero) {
+					dashDirection = (Camera.main.ScreenToWorldPoint (Input.mousePosition) - transform.position).normalized;
+				}
+			}
+        	
+			if (!dashing) {
+				rb2D.velocity = new Vector2 (Input.GetAxis ("Horizontal"), Input.GetAxis ("Vertical")).normalized * MaxSpeed;
+        	
+				Vector3 MouseInWorld = Camera.main.ScreenToWorldPoint (Input.mousePosition);
+				Vector3 PlayerToMouse = MouseInWorld - transform.position;
+				transform.eulerAngles = new Vector3 (transform.eulerAngles.x, transform.eulerAngles.y, Mathf.Atan2 (PlayerToMouse.y, PlayerToMouse.x) * Mathf.Rad2Deg); 
+			} else {
+				dashTimer += Time.deltaTime;
+				dashCooldownTimer += Time.deltaTime;
+				if (dashTimer >= dashTime) {
+					rb2D.velocity = Vector2.zero;
+				} else {
+					rb2D.velocity = dashDirection * dashSpeed;
+				}
+        	
+				if (dashCooldownTimer >= dashCooldown) {
+					dashTimer = 0f;
+					dashing = false;
+					dashCooldownTimer = 0f;
+				}
+			}
+		}
 	}
 
     void OnCollisionEnter2D(Collision2D collision)

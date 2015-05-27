@@ -4,6 +4,8 @@ using System.Collections;
 public class S3_ClientMessageProcessor : MonoBehaviour {
     private S3client client;
     public GameObject ServerPlayer;
+	public GameObject ClientPlayer;
+	public GameObject DeathText;
 	// Use this for initialization
 	void Start () {
         client = GetComponent<S3client>();
@@ -53,17 +55,17 @@ public class S3_ClientMessageProcessor : MonoBehaviour {
     private void HandleServerConnectResponse(S3_GameMessage message)
     {
         S3_ServerConnectResponseData responseData = (S3_ServerConnectResponseData)( message.MessageData );
-        if( responseData.acceptance )
-        {
-            client.PlayerNum = (int)( message.PlayerNum );
-            client.Players[client.PlayerNum] = client.ThePlayer;
-            client.ThePlayer.transform.position = new Vector3( responseData.PosX, responseData.PosY );
-
-            S3_ClientResponseAckData data = new S3_ClientResponseAckData
+		client.PlayerNum = (int)( message.PlayerNum );
+		client.Players[client.PlayerNum] = client.ThePlayer;
+		client.ThePlayer.transform.position = new Vector3( responseData.PosX, responseData.PosY );
+		//If accept is true than it is an initial spawn
+		//If accept is false it is a respawn
+		if (responseData.acceptance) {
+			S3_ClientResponseAckData data = new S3_ClientResponseAckData
             {
                 ack = true
             };
-            S3_GameMessage toSend = new S3_GameMessage
+			S3_GameMessage toSend = new S3_GameMessage
             {
                 PlayerNum = (byte)( client.PlayerNum ),
                 SendTime = 0f,
@@ -71,8 +73,12 @@ public class S3_ClientMessageProcessor : MonoBehaviour {
                 MessageType = S3_GameMessageType.ClientResponseAck
             };
 
-            client.SendGameMessage( toSend );
-        }
+			client.SendGameMessage (toSend);
+		} else {
+			DeathText.SetActive(false);
+			ClientPlayer.GetComponent<S3_CharacterMovement>().dead = false;
+			ClientPlayer.GetComponent<S3_ClientCombatInputCollector>().dead = false;
+		}
     }
 
     private void HandleServerTime(S3_GameMessage message)
@@ -119,6 +125,12 @@ public class S3_ClientMessageProcessor : MonoBehaviour {
     {
         S3_ServerPlayerDiedData data = (S3_ServerPlayerDiedData)( message.MessageData );
         int playerNum = (int)(data.PlayerNum);
+		if (playerNum == client.PlayerNum) {
+			ClientPlayer.GetComponent<S3_CharacterMovement>().dead = true;
+			ClientPlayer.GetComponent<S3_ClientCombatInputCollector>().dead = true;
+			ClientPlayer.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+			DeathText.SetActive(true);
+		}
     }
     private void HandleServerPlayerHit(S3_GameMessage message){}
     private void HandleServerPlayerSwing(S3_GameMessage message)

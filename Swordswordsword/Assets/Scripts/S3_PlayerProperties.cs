@@ -7,11 +7,8 @@ public class S3_PlayerProperties : MonoBehaviour {
     public string PlayerName;
 	public GameObject ServerObject;
     private int currentHealth;
-	private int PlayerNumber;
-	public bool dead {
-		get;
-		private set;
-	}
+	public int PlayerNumber;
+	public bool dead;
 	private bool IsServer;
 	// Use this for initialization
 	void Start () {

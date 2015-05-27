@@ -243,26 +243,50 @@ public class S3_HostMessageProcessor : MonoBehaviour {
     private void HandleSwing(S3_GameMessage message)
     {
 		int swingingPlayer = (int)(message.PlayerNum);
-		S3_CombatStateController combatController = server.playerManager.Players [swingingPlayer].GetComponent<S3_CombatStateController> ();
-		combatController.SwingSword ();
 
-		for (int i = 0; i < server.playerManager.CurrentPlayers; ++i) {
-			if( i != swingingPlayer )
+		//Resapwns if player is dead Swings sword if alive
+		//Awful code organization, in fixing with hacks mode
+		if (server.playerManager.Players [swingingPlayer].GetComponent<S3_PlayerProperties> ().dead) {
+			server.playerManager.Players[swingingPlayer].transform.position =
+				server.playerManager.SpawnPoints[swingingPlayer].transform.position;
+			S3_ServerConnectResponseData responseData = new S3_ServerConnectResponseData
 			{
-				S3_ServerPlayerSwingData swingData = new S3_ServerPlayerSwingData
-				{
-					PlayerNum = message.PlayerNum
-				};
+				PosX = server.playerManager.SpawnPoints[swingingPlayer].transform.position.x,
+				PosY = server.playerManager.SpawnPoints[swingingPlayer].transform.position.y,
+				acceptance = false
+			};
+			S3_GameMessage SpawnMessage = new S3_GameMessage
+			{
+				SendTime = Time.time,
+				PlayerNum = (byte)swingingPlayer,
+				MessageData = responseData,
+				MessageType = S3_GameMessageType.ServerConnectResponse
+			};
+			server.SendGameMessage(SpawnMessage);
+			server.playerManager.Players [swingingPlayer].GetComponent<S3_PlayerProperties> ().dead = false;
+		}
 
-				S3_GameMessage swingMessage = new S3_GameMessage
-				{
-					MessageType = S3_GameMessageType.ServerPlayerSwing,
-					MessageData = swingData,
-					PlayerNum = (byte)i,
-					SendTime = Time.time
-				};
-
-				server.SendGameMessage(swingMessage);
+		else {
+			S3_CombatStateController combatController = server.playerManager.Players [swingingPlayer].GetComponent<S3_CombatStateController> ();
+			combatController.SwingSword ();
+			
+			for (int i = 0; i < server.playerManager.CurrentPlayers; ++i) {
+				if (i != swingingPlayer) {
+					S3_ServerPlayerSwingData swingData = new S3_ServerPlayerSwingData
+					{
+						PlayerNum = message.PlayerNum
+					};
+			
+					S3_GameMessage swingMessage = new S3_GameMessage
+					{
+						MessageType = S3_GameMessageType.ServerPlayerSwing,
+						MessageData = swingData,
+						PlayerNum = (byte)i,
+						SendTime = Time.time
+					};
+			
+					server.SendGameMessage (swingMessage);
+				}
 			}
 		}
     }

@@ -4,6 +4,7 @@ using System.Collections;
 public class S3_ClientCombatInputCollector : MonoBehaviour {
 	public GameObject ClientObject;
 	private S3client Client;
+	public bool dead = false;
 
     private S3_CombatStateController combatController;
     private S3_CharacterMovement characterMovement;
@@ -16,28 +17,44 @@ public class S3_ClientCombatInputCollector : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        AnimatorStateInfo info = combatController.GetAnimatorInfo( 0 );
-
-        if( Input.GetButton( "Attack" ) && !info.IsName("ShoulderSlash") && !characterMovement.dashing )
-        {
-            combatController.SwingSword();
+        if (!dead) {
+			AnimatorStateInfo info = combatController.GetAnimatorInfo (0);
+        	
+			if (Input.GetButton ("Attack") && !info.IsName ("ShoulderSlash") && !characterMovement.dashing) {
+				combatController.SwingSword ();
 			S3_ClientSwingData swingData = new S3_ClientSwingData
+        	{
+        	animateSpeed = 1.0f
+        	};
+				S3_GameMessage swingMessage = new S3_GameMessage
+        	{
+        	SendTime = S3_ServerTime.ServerTime,
+        	PlayerNum = (byte)(Client.PlayerNum),
+        	MessageData = swingData,
+        	MessageType = S3_GameMessageType.ClientSwing
+        	};
+        	
+				Client.SendGameMessage (swingMessage);
+			} else {
+				combatController.StopSwing ();
+			}
+		} else {
+			if( Input.GetButton("Attack") )
 			{
-				animateSpeed = 1.0f
-			};
-			S3_GameMessage swingMessage = new S3_GameMessage
-			{
-				SendTime = S3_ServerTime.ServerTime,
-				PlayerNum = (byte)(Client.PlayerNum),
-				MessageData = swingData,
-				MessageType = S3_GameMessageType.ClientSwing
-			};
-
-			Client.SendGameMessage( swingMessage );
-        }
-        else
-        {
-            combatController.StopSwing();
-        }
+				S3_ClientSwingData swingData = new S3_ClientSwingData
+				{
+					animateSpeed = 1.0f
+				};
+				S3_GameMessage swingMessage = new S3_GameMessage
+				{
+					SendTime = S3_ServerTime.ServerTime,
+					PlayerNum = (byte)(Client.PlayerNum),
+					MessageData = swingData,
+					MessageType = S3_GameMessageType.ClientSwing
+				};
+				
+				Client.SendGameMessage (swingMessage);
+			}
+		}
 	}
 }

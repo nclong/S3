@@ -4,13 +4,19 @@ using System.Collections;
 public class S3_DefaultSword : MonoBehaviour {
     public int Damage;
 	public GameObject ServerObject;
+	public GameObject GameManager;
 	private bool IsServer;
+
+	private S3_GameManager gameManager;
 
 	// Use this for initialization
 	void Start () {
 		ServerObject = GameObject.Find ("ServerObject");
 		IsServer = ServerObject != null;
-	
+		GameManager = GameObject.Find ("GameManager");
+		if (GameManager != null) {
+			gameManager = GameManager.GetComponent<S3_GameManager>();
+		}
 	}
 	
 	// Update is called once per frame
@@ -29,6 +35,7 @@ public class S3_DefaultSword : MonoBehaviour {
 				if(IsServer)
 				{
 					player.TakeDamage();
+					gameManager.PlayerScores[transform.root.gameObject.GetComponent<S3_PlayerProperties>().PlayerNumber] += 1;
 				}
 				else {
 	                GameObject bloodEmitter = player.GetBloodEmittier();
