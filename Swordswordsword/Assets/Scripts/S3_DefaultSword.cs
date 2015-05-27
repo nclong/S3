@@ -3,7 +3,7 @@ using System.Collections;
 
 public class S3_DefaultSword : MonoBehaviour {
     public int Damage;
-	private GameObject ServerObject;
+	public GameObject ServerObject;
 	private bool IsServer;
 
 	// Use this for initialization

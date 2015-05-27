@@ -2,19 +2,15 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class S3_LatencyQueue : MonoBehaviour {
+public class S3_LatencyQueue {
 
 	private int capacity = 10;
 	private Queue<float> latencyQueue;
 	// Use this for initialization
-	void Start () {
+	public S3_LatencyQueue () {
 		latencyQueue = new Queue<float> (capacity);
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+
 
 	public void Enqueue(float x)
 	{

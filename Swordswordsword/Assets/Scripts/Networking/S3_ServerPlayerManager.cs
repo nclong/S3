@@ -45,7 +45,7 @@ public class S3_ServerPlayerManager : MonoBehaviour {
 		TimeOffsets = new float[] {0f, 0f, 0f, 0f};
 		TimeoutCounter = new float[] {0f, 0f, 0f, 0f};
         Players = new GameObject[4];
-		Latencies = new S3_LatencyQueue[4];
+		Latencies = new S3_LatencyQueue[4]; //{ new S3_LatencyQueue(), new S3_LatencyQueue(), new S3_LatencyQueue(), new S3_LatencyQueue();
 		PlayerEndPoints = new IPEndPoint[4];
 		PlayerNames = new string[4];
 		TimeRequestSent = new bool[] {true, true, true, true};
