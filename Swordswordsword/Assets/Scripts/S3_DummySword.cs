@@ -26,7 +26,7 @@ public class S3_DummySword : MonoBehaviour
         S3_PlayerProperties player = collisionObject.GetComponent<S3_PlayerProperties>();
         if (player != null && collisionObject != transform.parent.gameObject)
         {
-            player.TakeDamage(Damage);
+            //player.TakeDamage(Damage);
             GameObject bloodEmitter = player.GetBloodEmittier();
             Vector3 PlayerToSword = collisionObject.transform.position - transform.parent.position;
             float bloodSplatAngle = Mathf.Atan2(PlayerToSword.y, PlayerToSword.x) * Mathf.Rad2Deg - 180f;

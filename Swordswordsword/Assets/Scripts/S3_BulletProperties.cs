@@ -34,7 +34,7 @@ public class S3_BulletProperties : MonoBehaviour {
         S3_PlayerProperties player = collision.gameObject.GetComponent<S3_PlayerProperties>();
         if( player != null )
         {
-            player.TakeDamage( shotDmg );
+            //player.TakeDamage( shotDmg );
             GameObject bloodEmitter = player.GetBloodEmittier();
             Vector3 bulletToPlayer = collision.gameObject.transform.position - transform.position;
             float bloodSplatAngle = Mathf.Atan2( bulletToPlayer.y, bulletToPlayer.x ) * Mathf.Rad2Deg - 180f;

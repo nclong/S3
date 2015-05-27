@@ -5,7 +5,7 @@ using System.Net;
 
 public class S3_ServerPlayerManager : MonoBehaviour {
 	private const float CLIENT_TIMEOUT = 60000;
-
+	public GameObject ServerObject;
 	public GameObject PlayerPrefab;
     private const int Player_Max = 4;
     private int currentPlayerCount = 0;
@@ -74,6 +74,12 @@ public class S3_ServerPlayerManager : MonoBehaviour {
             return -1;
         }
         Players[currentPlayerCount] = Instantiate<GameObject>( PlayerPrefab );
+		S3_PlayerProperties playerProps = Players [currentPlayerCount].GetComponent<S3_PlayerProperties> ();
+		if (playerProps != null) {
+			playerProps.SetPlayerNum(currentPlayerCount);
+			playerProps.ServerObject = ServerObject;
+			playerProps.CheckIfServer();
+		}
         Players[currentPlayerCount].transform.position = SpawnPoints[currentPlayerCount].transform.position;
 		TimeOffsets [currentPlayerCount] = 0f;
 		TimeoutCounter [currentPlayerCount] = 0f;

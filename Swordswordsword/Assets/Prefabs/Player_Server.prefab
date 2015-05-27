@@ -45,6 +45,7 @@ GameObject:
   - 50: {fileID: 5072554}
   - 114: {fileID: 11408302}
   - 60: {fileID: 6011346}
+  - 114: {fileID: 11455714}
   m_Layer: 0
   m_Name: Player_Server
   m_TagString: Player
@@ -443,6 +444,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Damage: 2
+  ServerObject: {fileID: 0}
 --- !u!114 &11415292
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -473,6 +475,21 @@ MonoBehaviour:
   rarity: 2
   Damage: 2
   RocketObject: {fileID: 140590, guid: a7f0ab8f6dc44d54b9a5c9dd6f00aaa1, type: 2}
+--- !u!114 &11455714
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 136844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32e56f3118f7a104699ffa48f5418c6c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  StartingHealth: 1
+  BloodEmitter: {fileID: 100704}
+  PlayerName: Client
+  ServerObject: {fileID: 0}
 --- !u!114 &11471038
 MonoBehaviour:
   m_ObjectHideFlags: 1

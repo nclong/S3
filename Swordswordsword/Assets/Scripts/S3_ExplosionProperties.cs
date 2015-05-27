@@ -26,7 +26,7 @@ public class S3_ExplosionProperties : MonoBehaviour {
         if( colliderObject.tag == "Player" )
         {
             S3_PlayerProperties properties = colliderObject.GetComponent<S3_PlayerProperties>();
-            properties.TakeDamage( Damage );
+            //properties.TakeDamage( Damage );
         }
     }
 
