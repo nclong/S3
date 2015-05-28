@@ -1,0 +1,29 @@
+Steps for loading game:
+(3 computers required, more UDP nonsense)
+
+1. Open swordswordsword in Unity
+2. Build tussle_server into an executable.
+3. On computer 1, open that executable and note the IP
+4. On computer 2, swordswordsword in Unity
+5. Open the tussle_client scene. On the ClientObject object find the field "IP" and enter the IP from step 3
+6. Build an executable out of the tussle_client scene
+7. Repeat steps 4-6 but on a third computer.
+8. As the client boots it will connect to the server
+
+
+Esc in a client to disconnect
+
+Relevant script files:
+
+S3_HostMessageProcessor
+S3_ClientMessageProcessor
+S3_MiscController
+S3_DefaultSword
+S3_GameManager
+S3_ClientDisconnect
+S3_LatencyQueue
+S3_ServerPlayerManager
+
+Just about all of them
+
+We don't have discrete sessions. Or do we? I don't know how Devon's doing.
