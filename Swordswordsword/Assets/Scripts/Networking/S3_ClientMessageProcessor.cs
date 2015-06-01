@@ -175,7 +175,15 @@ public class S3_ClientMessageProcessor : MonoBehaviour {
 
     private void HandleServerDeletePlayer(S3_GameMessage message)
     { 
-		Application.Quit ();
+        if( UnityEditor.EditorApplication.isPlaying )
+        {
+            UnityEditor.EditorApplication.isPlaying = false;
+        }
+        else
+        {
+            Application.Quit();
+        }
+		
     }
 
 
