@@ -46,8 +46,17 @@ public class S3client : MonoBehaviour
 
         try
         {
-            IPHostEntry ipHostInfo = Dns.GetHostEntry( Dns.GetHostName() );
-            IPAddress ipAddress = ipHostInfo.AddressList[0];
+            string url = "http://checkip.dyndns.org";
+            WebRequest req = System.Net.WebRequest.Create( url );
+            WebResponse resp = req.GetResponse();
+            StreamReader sr = new System.IO.StreamReader( resp.GetResponseStream() );
+            string response = sr.ReadToEnd().Trim();
+            string[] a = response.Split( ':' );
+            string a2 = a[1].Substring( 1 );
+            string[] a3 = a2.Split( '<' );
+            string a4 = a3[0];
+
+            IPAddress ipAddress = IPAddress.Parse( a4 );
             player.Connect( HostEndPoint );
             S3_ClientConnectRequestData request = new S3_ClientConnectRequestData
             {
