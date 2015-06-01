@@ -102,6 +102,7 @@ public class S3_ClientPlayerManager : MonoBehaviour
                 }
                 Latencies[i] = Latencies[i + 1];
                 Players[i] = Players[i + 1];
+                Scores[i] = Scores[i + 1];
                 PlayerNames[i] = PlayerNames[i + 1];
             }
         }
