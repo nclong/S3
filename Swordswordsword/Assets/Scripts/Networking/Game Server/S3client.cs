@@ -180,13 +180,6 @@ public class S3client : MonoBehaviour
 
     private void EndClient()
     {
-        if( UnityEditor.EditorApplication.isPlaying )
-        {
-            UnityEditor.EditorApplication.isPlaying = false;
-        }
-        else
-        {
-            Application.Quit();
-        }
+        Application.Quit();
     }
 }
