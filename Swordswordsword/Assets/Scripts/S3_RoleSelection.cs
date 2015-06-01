@@ -13,6 +13,7 @@ public class S3_RoleSelection : MonoBehaviour {
 
     public void SelectHost()
     {
+
         Application.LoadLevel( "tussle_server" );
     }
 }

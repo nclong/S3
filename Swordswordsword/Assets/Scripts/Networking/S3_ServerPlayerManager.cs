@@ -53,7 +53,7 @@ public class S3_ServerPlayerManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		List<int> playersTimedout = new List<int> ();
+        List<int> playersTimedout = new List<int>();
 		for (int i = 0; i < currentPlayerCount; ++i) {
 			TimeoutCounter[i] += Time.deltaTime;
 			if (TimeoutCounter[i] >= CLIENT_TIMEOUT) {

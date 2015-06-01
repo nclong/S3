@@ -43,8 +43,9 @@ public class S3_MasterServerConnectionManager : MonoBehaviour {
         //whether we fail to login or not, we want to close the sockets on BOTH ends.
         if( response.responseCode == 1)
         {
-            
-            Application.LoadLevel( "firstScene" );
+            PlayerPrefs.SetString( "PlayerName", userName );
+            PlayerPrefs.Save();
+            Application.LoadLevel( "roleSelection" );
         }
         else if (response.responseCode == -1)
         { 
