@@ -8,7 +8,7 @@ public class S3_ClientPlayerManager : MonoBehaviour
     public GameObject PlayerPrefab;
     private const int Player_Max = 4;
     private int currentPlayerCount = 0;
-
+    private S3client client;
     public int CurrentPlayers
     {
         get
@@ -17,9 +17,8 @@ public class S3_ClientPlayerManager : MonoBehaviour
         }
     }
     public string[] PlayerNames;
-    public bool[] TimeRequestSent;
-    public GameObject[] SpawnPoints;
     public float[] Latencies;
+    public int[] Scores;
     public GameObject[] Players
     {
         get;
@@ -37,11 +36,11 @@ public class S3_ClientPlayerManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-
+        client = GetComponent<S3client>();
         Players = new GameObject[4];
         Latencies = new float[4]; //{ new S3_LatencyQueue(), new S3_LatencyQueue(), new S3_LatencyQueue(), new S3_LatencyQueue();
         PlayerNames = new string[4];
-        TimeRequestSent = new bool[] { true, true, true, true };
+        Scores = new int[4];
     }
 
     // Update is called once per frame
@@ -50,11 +49,16 @@ public class S3_ClientPlayerManager : MonoBehaviour
 
     }
 
-    public int CreatePlayer(IPEndPoint PlayerEndPoint)
+    public int CreatePlayer(float x, float y)
     {
         if (currentPlayerCount >= Player_Max)
         {
             return -1;
+        }
+
+        if( currentPlayerCount == (int)(client.PlayerNum))
+        {
+            currentPlayerCount++;
         }
         Players[currentPlayerCount] = Instantiate<GameObject>(PlayerPrefab);
         S3_PlayerProperties playerProps = Players[currentPlayerCount].GetComponent<S3_PlayerProperties>();
@@ -63,7 +67,7 @@ public class S3_ClientPlayerManager : MonoBehaviour
             playerProps.SetPlayerNum(currentPlayerCount);
             playerProps.CheckIfServer();
         }
-        Players[currentPlayerCount].transform.position = SpawnPoints[currentPlayerCount].transform.position;
+        Players[currentPlayerCount].transform.position = new Vector3( x, y );
         PlayerNames[currentPlayerCount] = string.Empty;
         Latencies[currentPlayerCount] = new float();
         return currentPlayerCount++;
@@ -92,10 +96,13 @@ public class S3_ClientPlayerManager : MonoBehaviour
 
             if (toRemoveReached && i + 1 < currentPlayerCount)
             {
+                if( i + 1 == client.PlayerNum )
+                {
+                    client.PlayerNum--;
+                }
                 Latencies[i] = Latencies[i + 1];
                 Players[i] = Players[i + 1];
                 PlayerNames[i] = PlayerNames[i + 1];
-                TimeRequestSent[i] = TimeRequestSent[i + 1];
             }
         }
 

@@ -147,6 +147,22 @@ public class S3_MessageFormatter  {
                 return new S3_ServerDisconnectAck { PlayerNum = 0 };
             case S3_GameMessageType.ClientDisconnectMsg:
                 return new S3_ClientDisconnectMsg { PlayerNum = 0 };
+            case S3_GameMessageType.ServerPlayerInfo:
+                S3_ServerPlayerInfoData toReturn = new S3_ServerPlayerInfoData();
+                toReturn.pings = new float[4];
+                toReturn.scores = new int[4];
+                for( int j = 0; j < 4; ++j )
+                {
+                    toReturn.pings[j] = BitConverter.ToSingle( rawData, i + j * sizeof( float ) );
+                    toReturn.scores[j] = BitConverter.ToInt32( rawData, i + sizeof( float ) * 4 + j * sizeof( int ) );
+                }
+
+                return toReturn;
+            case S3_GameMessageType.ServerRemovePlayer:
+                return new S3_ServerRemovePlayerData
+                {
+                   PlayerNum = rawData[i]
+                };
             /*case S3_GameMessageType.ServerSwordzookaPos:
             case S3_GameMessageType.ServerSwordzookaRot:
             case S3_GameMessageType.ServerSwordzookaHit:
@@ -238,6 +254,17 @@ public class S3_MessageFormatter  {
                 return new byte[1] { 0 }; //KTZ
             case S3_GameMessageType.ClientDisconnectMsg:
                 return new byte[1] { 0 }; //KTZ
+            case S3_GameMessageType.ServerPlayerInfo:
+                List<byte> scores = new List<byte>();
+                for(int j = 0; j < 4; ++j )
+                {
+                    toReturn.AddRange( BitConverter.GetBytes( ( (S3_ServerPlayerInfoData)( message.MessageData ) ).pings[j] ) );
+                    scores.AddRange( BitConverter.GetBytes( ( (S3_ServerPlayerInfoData)( message.MessageData ) ).scores[j] ) );
+                }
+                toReturn.AddRange( scores );
+                return toReturn.ToArray();
+            case S3_GameMessageType.ServerRemovePlayer:
+                return new byte[1] { ( (S3_ServerRemovePlayerData)( message.MessageData ) ).PlayerNum };
             /*case S3_GameMessageType.ServerSwordzookaPos:
             case S3_GameMessageType.ServerSwordzookaRot:
             case S3_GameMessageType.ServerSwordzookaHit:

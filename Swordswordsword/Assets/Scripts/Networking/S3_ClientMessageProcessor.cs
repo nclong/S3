@@ -49,16 +49,36 @@ public class S3_ClientMessageProcessor : MonoBehaviour {
             case S3_GameMessageType.ServerGunswordHit:
             case S3_GameMessageType.ServerDisconnectAck:
                 HandleServerDeletePlayer(message); break;//KTZ
+            case S3_GameMessageType.ServerRemovePlayer:
+                HandleServerRemovePlayer( message ); break;
+            case S3_GameMessageType.ServerPlayerInfo:
+                HandleServerPlayerInfo( message ); break;
             default:
                 break;
         }
+    }
+
+    private void HandleServerPlayerInfo( S3_GameMessage message )
+    {
+        S3_ServerPlayerInfoData infoData = (S3_ServerPlayerInfoData)( message.MessageData );
+        for(int i = 0; i < client.playerManager.CurrentPlayers; ++i)
+        {
+            client.playerManager.Latencies[i] = infoData.pings[i];
+            client.playerManager.Scores[i] = infoData.scores[i];
+        }
+    }
+
+    private void HandleServerRemovePlayer( S3_GameMessage message )
+    {
+        int toRemove = ( (S3_ServerRemovePlayerData)( message.MessageData ) ).PlayerNum;
+        client.playerManager.RemovePlayer( toRemove );
     }
 
     private void HandleServerConnectResponse(S3_GameMessage message)
     {
         S3_ServerConnectResponseData responseData = (S3_ServerConnectResponseData)( message.MessageData );
 		client.PlayerNum = (int)( message.PlayerNum );
-		client.Players[client.PlayerNum] = client.ThePlayer;
+        client.playerManager.Players[client.PlayerNum] = client.ThePlayer;
 		client.ThePlayer.transform.position = new Vector3( responseData.PosX, responseData.PosY );
 		//If accept is true than it is an initial spawn
 		//If accept is false it is a respawn
@@ -114,14 +134,14 @@ public class S3_ClientMessageProcessor : MonoBehaviour {
         Vector3 oldPos = new Vector3( data.DRPosX, data.DRPosY );
         Vector3 vel = new Vector3( data.DRVelX, data.DRVelY );
         Vector3 newPos = oldPos + new Vector3( vel.x, vel.y ) * ( S3_ServerTime.ServerTime - data.InitialTime );
-        client.Players[playerNum].transform.position = newPos;
-        client.Players[playerNum].GetComponent<Rigidbody2D>().velocity = new Vector2( vel.x, vel.y );
+        client.playerManager.Players[playerNum].transform.position = newPos;
+        client.playerManager.Players[playerNum].GetComponent<Rigidbody2D>().velocity = new Vector2( vel.x, vel.y );
     }
     private void HandleServerPlayerRotDR(S3_GameMessage message)
     {
         S3_ServerPlayerRotDRData data = (S3_ServerPlayerRotDRData)( message.MessageData );
         int playerNum = (int)( data.PlayerNum );
-        client.Players[playerNum].transform.eulerAngles = new Vector3( 0f, 0f, data.DRAngle );
+        client.playerManager.Players[playerNum].transform.eulerAngles = new Vector3( 0f, 0f, data.DRAngle );
     }
     private void HandleServerPlayerDied(S3_GameMessage message)
     {
@@ -139,7 +159,7 @@ public class S3_ClientMessageProcessor : MonoBehaviour {
     {
         S3_ServerPlayerSwingData data = (S3_ServerPlayerSwingData)( message.MessageData );
         int playerNum = (int)data.PlayerNum;
-        client.Players[playerNum].GetComponent<S3_CombatStateController>().SwingSword();
+        client.playerManager.Players[playerNum].GetComponent<S3_CombatStateController>().SwingSword();
     }
     private void HandleServerPlayerSwitch(S3_GameMessage message){}
     private void HandleServerStartGame(S3_GameMessage message){}
@@ -147,10 +167,11 @@ public class S3_ClientMessageProcessor : MonoBehaviour {
     {
         S3_ServerNewPlayerData newPData = (S3_ServerNewPlayerData)(message.MessageData);
         int playerNum = (int)( newPData.PlayerNum );
-        client.Players[playerNum] = Instantiate<GameObject>( ServerPlayer );
-        client.Players[playerNum].transform.position = new Vector3( newPData.PosX, newPData.PosY );
-    
+        client.playerManager.CreatePlayer(newPData.PosX, newPData.PosY );
+        client.playerManager.PlayerNames[playerNum] = newPData.PlayerName;
     }
+
+
 
     private void HandleServerDeletePlayer(S3_GameMessage message)
     { 

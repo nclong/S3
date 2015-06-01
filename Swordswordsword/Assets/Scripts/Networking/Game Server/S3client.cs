@@ -15,9 +15,8 @@ public class S3client : MonoBehaviour
 
     public string HostIP;
     public string PlayerName;
-    public GameObject[] Players;
     public GameObject ThePlayer;
-
+    public S3_ClientPlayerManager playerManager;
     private UdpClient player;
     public int PlayerNum = -1;
 
@@ -31,7 +30,7 @@ public class S3client : MonoBehaviour
         ReceiveQueue = new S3_MessagesQueue();
         SendQueue = new S3_MessagesQueue();
         MessageProcessor = GetComponent<S3_ClientMessageProcessor>();
-        Players = new GameObject[4];
+        playerManager = GetComponent<S3_ClientPlayerManager>();
         StartClient();
     }
 

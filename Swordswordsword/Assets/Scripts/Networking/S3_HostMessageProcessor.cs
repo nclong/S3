@@ -306,6 +306,10 @@ public class S3_HostMessageProcessor : MonoBehaviour {
 		{
 			PlayerNum = message.PlayerNum
 		};
+        S3_ServerRemovePlayerData removeData = new S3_ServerRemovePlayerData
+        {
+            PlayerNum = message.PlayerNum
+        };
 		S3_GameMessage toSend = new S3_GameMessage
 		{
 			PlayerNum = message.PlayerNum,
@@ -316,6 +320,21 @@ public class S3_HostMessageProcessor : MonoBehaviour {
 		server.SendGameMessage(toSend);
 		server.playerManager.RemovePlayer ((int)message.PlayerNum);
 
-        return;
+        for( int i = 0; i < server.playerManager.CurrentPlayers; ++i )
+        {
+            if( i != (int)message.PlayerNum )
+            {
+                S3_GameMessage newMessage = new S3_GameMessage
+                {
+                    SendTime = Time.time,
+                    PlayerNum = (byte)i,
+                    MessageData = removeData,
+                    MessageType = S3_GameMessageType.ServerRemovePlayer
+                };
+
+                server.SendGameMessage(newMessage);
+            }
+        }
+            return;
     }
 }

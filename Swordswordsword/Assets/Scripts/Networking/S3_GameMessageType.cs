@@ -26,5 +26,7 @@
     ServerGunswordRot,
     ServerGunswordHit,
     ServerDisconnectAck,
-    ClientDisconnectMsg
+    ClientDisconnectMsg,
+    ServerPlayerInfo,
+    ServerRemovePlayer
 }
