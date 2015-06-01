@@ -5,9 +5,11 @@ using System.Net;
 public class S3_HostMessageProcessor : MonoBehaviour {
 
     private S3server server;
+    private bool[] disconnectAck;
 
     void Start()
     {
+        disconnectAck = new bool[] { true, true, true, true };
         server = GetComponent<S3server>();
     }
 	public void ProcessMessage(S3_GameMessage message)
@@ -49,6 +51,10 @@ public class S3_HostMessageProcessor : MonoBehaviour {
             case S3_GameMessageType.ServerGunswordHit:
             case S3_GameMessageType.ClientDisconnectMsg:
                 HandleDisconnect(message); break; //KTZ
+            case S3_GameMessageType.ServerDisconnectAck:
+                HandleDisconnectAck( message ); break;
+            case S3_GameMessageType.ServerRemovePlayer:
+                HandleRemoveAck( message ); break;
             default:
                 break;
         }
@@ -299,26 +305,13 @@ public class S3_HostMessageProcessor : MonoBehaviour {
         return;
     }
 
-    //KTZ
-    private void HandleDisconnect(S3_GameMessage message)
+    private void HandleDisconnectAck(S3_GameMessage message)
     {
-		S3_ServerDisconnectAck data = new S3_ServerDisconnectAck
-		{
-			PlayerNum = message.PlayerNum
-		};
+        disconnectAck[message.PlayerNum] = true;
         S3_ServerRemovePlayerData removeData = new S3_ServerRemovePlayerData
         {
             PlayerNum = message.PlayerNum
         };
-		S3_GameMessage toSend = new S3_GameMessage
-		{
-			PlayerNum = message.PlayerNum,
-			SendTime = Time.time,
-			MessageData = data,
-			MessageType = S3_GameMessageType.ServerDisconnectAck
-		};
-		server.SendGameMessage(toSend);
-		server.playerManager.RemovePlayer ((int)message.PlayerNum);
 
         for( int i = 0; i < server.playerManager.CurrentPlayers; ++i )
         {
@@ -332,9 +325,46 @@ public class S3_HostMessageProcessor : MonoBehaviour {
                     MessageType = S3_GameMessageType.ServerRemovePlayer
                 };
 
-                server.SendGameMessage(newMessage);
+                server.SendGameMessage( newMessage );
             }
         }
-            return;
+    }
+
+    private void HandleRemoveAck(S3_GameMessage message)
+    {
+        disconnectAck[message.PlayerNum] = true;
+        bool test = true;
+        for(int i = 0; i < server.playerManager.CurrentPlayers; ++i)
+        {
+            if( !disconnectAck[i] )
+            {
+                test = false;
+            }
+        }
+
+        if(test)
+        {
+            server.playerManager.RemovePlayer( (int)( (S3_ServerRemovePlayerData)( message.MessageData ) ).PlayerNum );
+            disconnectAck = new bool[] { true, true, true, true };
+        }
+    }
+    //KTZ
+    private void HandleDisconnect(S3_GameMessage message)
+    {
+        disconnectAck = new bool[] { false, false, false, false};
+		S3_ServerDisconnectAck data = new S3_ServerDisconnectAck
+		{
+			PlayerNum = message.PlayerNum
+		};
+
+		S3_GameMessage toSend = new S3_GameMessage
+		{
+			PlayerNum = message.PlayerNum,
+			SendTime = Time.time,
+			MessageData = data,
+			MessageType = S3_GameMessageType.ServerDisconnectAck
+		};
+		server.SendGameMessage(toSend);
+        return;
     }
 }

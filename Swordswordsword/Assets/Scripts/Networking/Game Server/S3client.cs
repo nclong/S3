@@ -134,7 +134,7 @@ public class S3client : MonoBehaviour
                 endPoint = HostEndPoint,
                 message = toSend
             };
-            
+
             player.BeginSend( state.buffer, state.buffer.Length, new AsyncCallback(SendCallback), state );
         }
     }
@@ -148,12 +148,9 @@ public class S3client : MonoBehaviour
     {
         S3_StateObject state = (S3_StateObject)result.AsyncState;
         int sendResult = state.socket.EndSend( result );
-        if( state.message.MessageType == S3_GameMessageType.ClientRotDR)
+        if( state.message.MessageType == S3_GameMessageType.ServerDisconnectAck )
         {
-            for(int i = 0; i < state.buffer.Length; ++i)
-            {
-                Debug.Log(state.buffer[i]);
-            }
+            EndClient();
         }
         Debug.Log(String.Format("Sent message of type {0}", state.message.MessageType));
         Debug.Log( "Send state: " + sendResult );
@@ -179,5 +176,17 @@ public class S3client : MonoBehaviour
         }
 
 
+    }
+
+    private void EndClient()
+    {
+        if( UnityEditor.EditorApplication.isPlaying )
+        {
+            UnityEditor.EditorApplication.isPlaying = false;
+        }
+        else
+        {
+            Application.Quit();
+        }
     }
 }

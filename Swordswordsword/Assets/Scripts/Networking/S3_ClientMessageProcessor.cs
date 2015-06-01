@@ -71,6 +71,18 @@ public class S3_ClientMessageProcessor : MonoBehaviour {
     private void HandleServerRemovePlayer( S3_GameMessage message )
     {
         int toRemove = ( (S3_ServerRemovePlayerData)( message.MessageData ) ).PlayerNum;
+        S3_ServerRemovePlayerData removeAck = new S3_ServerRemovePlayerData
+        {
+            PlayerNum = (byte)toRemove
+        };
+        S3_GameMessage toSend = new S3_GameMessage
+        {
+            MessageData = removeAck,
+            MessageType = S3_GameMessageType.ServerRemovePlayer,
+            SendTime = S3_ServerTime.ServerTime,
+            PlayerNum = (byte)(client.PlayerNum)
+        };
+        client.SendGameMessage(toSend);
         client.playerManager.RemovePlayer( toRemove );
     }
 
@@ -174,16 +186,20 @@ public class S3_ClientMessageProcessor : MonoBehaviour {
 
 
     private void HandleServerDeletePlayer(S3_GameMessage message)
-    { 
-        if( UnityEditor.EditorApplication.isPlaying )
+    {
+        S3_ServerDisconnectAck clientAck = new S3_ServerDisconnectAck
         {
-            UnityEditor.EditorApplication.isPlaying = false;
-        }
-        else
+            PlayerNum = (byte)( client.PlayerNum )
+        };
+        S3_GameMessage toSend = new S3_GameMessage
         {
-            Application.Quit();
-        }
-		
+            SendTime = S3_ServerTime.ServerTime,
+            MessageType = S3_GameMessageType.ServerDisconnectAck,
+            MessageData = clientAck,
+            PlayerNum = message.PlayerNum
+        };
+
+        client.SendGameMessage(toSend);
     }
 
 
