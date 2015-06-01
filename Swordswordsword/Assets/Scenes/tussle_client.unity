@@ -881,6 +881,7 @@ GameObject:
   - 114: {fileID: 1338693476}
   - 114: {fileID: 1338693475}
   - 114: {fileID: 1338693474}
+  - 114: {fileID: 1338693477}
   m_Layer: 0
   m_Name: ClientObject
   m_TagString: Untagged
@@ -938,9 +939,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HostIP: 128.195.54.222
   PlayerName: Toast
-  Players: []
   ThePlayer: {fileID: 506990885}
+  playerManager: {fileID: 0}
   PlayerNum: -1
+--- !u!114 &1338693477
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1338693472}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eff7f158916b1cf4494c6bf888175d12, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlayerPrefab: {fileID: 136844, guid: 6a1a5a986a4788b4eaa7da9381f2bfb6, type: 2}
+  PlayerNames: []
+  Latencies: []
+  Scores: 
 --- !u!1 &1347289873
 GameObject:
   m_ObjectHideFlags: 0
