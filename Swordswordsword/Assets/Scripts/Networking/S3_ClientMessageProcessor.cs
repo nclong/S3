@@ -146,15 +146,16 @@ public class S3_ClientMessageProcessor : MonoBehaviour {
         Vector3 oldPos = new Vector3( data.DRPosX, data.DRPosY );
         Vector3 vel = new Vector3( data.DRVelX, data.DRVelY );
         Vector3 newPos = oldPos + new Vector3( vel.x, vel.y ) * ( S3_ServerTime.ServerTime - data.InitialTime );
-        client.playerManager.Players[playerNum].transform.position = newPos;
-        client.playerManager.Players[playerNum].GetComponent<Rigidbody2D>().velocity = new Vector2( vel.x, vel.y );
+        client.playerManager.Players[playerNum].GetComponent<S3_DeadReckoningInterpolator>().SetTarget( newPos, new Vector2( vel.x, vel.y ) );
     }
+
     private void HandleServerPlayerRotDR(S3_GameMessage message)
     {
         S3_ServerPlayerRotDRData data = (S3_ServerPlayerRotDRData)( message.MessageData );
         int playerNum = (int)( data.PlayerNum );
         client.playerManager.Players[playerNum].transform.eulerAngles = new Vector3( 0f, 0f, data.DRAngle );
     }
+
     private void HandleServerPlayerDied(S3_GameMessage message)
     {
         S3_ServerPlayerDiedData data = (S3_ServerPlayerDiedData)( message.MessageData );
@@ -166,12 +167,14 @@ public class S3_ClientMessageProcessor : MonoBehaviour {
 			DeathText.SetActive(true);
 		}
     }
+
     private void HandleServerPlayerHit(S3_GameMessage message){}
     private void HandleServerPlayerSwing(S3_GameMessage message)
     {
         S3_ServerPlayerSwingData data = (S3_ServerPlayerSwingData)( message.MessageData );
         int playerNum = (int)data.PlayerNum;
-        client.playerManager.Players[playerNum].GetComponent<S3_CombatStateController>().SwingSword();
+        //Negative to speed up
+        client.playerManager.Players[playerNum].GetComponent<S3_CombatStateController>().SwingSword(-(client.playerManager.Latencies[client.PlayerNum]));
     }
     private void HandleServerPlayerSwitch(S3_GameMessage message){}
     private void HandleServerStartGame(S3_GameMessage message){}

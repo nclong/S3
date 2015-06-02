@@ -27,34 +27,29 @@ public class S3_CombatStateController : MonoBehaviour {
 		}
 	}
 
-    public void SwingSword()
+    public void SwingSword(float offset)
     {
-         AnimatorStateInfo info = swordAnimator.GetCurrentAnimatorStateInfo( 0 );
+        AnimatorStateInfo info = swordAnimator.GetCurrentAnimatorStateInfo( 0 );
+        float ServerTimeToFinish = info.length * 1.5f;
+        float localTimeToFinish = ServerTimeToFinish + offset;
+        float localSpeed = localTimeToFinish / info.length;
+        swordAnimator.speed = localSpeed;
         swordAnimator.SetBool("slashing", true);
-            S3_SwordLaser laser = SwordObj.GetComponent<S3_SwordLaser>();
-            /*if( laser != null && laser.enabled )
-            {
-                S3_SoundManager.LaserSound.Play();
-            }
-            else
-            {
-                S3_SoundManager.SlashSound.Play();
-            }*/
 
-            S3_GunSword gun = SwordObj.GetComponent<S3_GunSword>();
-            if( gun != null && gun.enabled )
-            {
-                gun.FireBullet();
-            }
+        S3_GunSword gun = SwordObj.GetComponent<S3_GunSword>();
+        if( gun != null && gun.enabled )
+        {
+            gun.FireBullet();
+        }
 
-            S3_SwordZooka zooka = SwordObj.GetComponent<S3_SwordZooka>();
-            if( zooka != null && zooka.enabled )
-            {
-                zooka.fireRocket();
-            }
+        S3_SwordZooka zooka = SwordObj.GetComponent<S3_SwordZooka>();
+        if( zooka != null && zooka.enabled )
+        {
+            zooka.fireRocket();
+        }
 
-            Debug.Log( "Slash Start" );
-            Debug.Log( info.IsName( "ShoulderSlash" ) );
+        Debug.Log( "Slash Start" );
+        Debug.Log( info.IsName( "ShoulderSlash" ) );
     }
 
     public AnimatorStateInfo GetAnimatorInfo(int x)

@@ -21,7 +21,9 @@ public class S3_ClientCombatInputCollector : MonoBehaviour {
 			AnimatorStateInfo info = combatController.GetAnimatorInfo (0);
         	
 			if (Input.GetButton ("Attack") && !info.IsName ("ShoulderSlash") && !characterMovement.dashing) {
-				combatController.SwingSword ();
+                float currentLatency = Client.playerManager.Latencies[Client.PlayerNum];
+                //1.5 is because that is the preferred speed, did not want to rekey animation
+                combatController.SwingSword( currentLatency );
 			S3_ClientSwingData swingData = new S3_ClientSwingData
         	{
         	animateSpeed = 1.0f

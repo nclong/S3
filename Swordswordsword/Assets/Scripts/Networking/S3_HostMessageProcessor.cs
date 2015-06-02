@@ -185,25 +185,25 @@ public class S3_HostMessageProcessor : MonoBehaviour {
         S3_ClientPosDRData posDRData = (S3_ClientPosDRData)( message.MessageData );
         int playerNum = (int)( message.PlayerNum );
         Vector3 oldPos = new Vector3( posDRData.DRPosX, posDRData.DRPosY );
-        server.playerManager.Players[playerNum].GetComponent<Rigidbody2D>().velocity = new Vector2( posDRData.DRVelX, posDRData.DRVelY );
         Vector3 vel = new Vector3( server.playerManager.Players[playerNum].GetComponent<Rigidbody2D>().velocity.x,
             server.playerManager.Players[playerNum].GetComponent<Rigidbody2D>().velocity.y );
         Vector3 newPos = oldPos + vel * ( Time.time - message.SendTime );
-        server.playerManager.Players[playerNum].transform.position = newPos;
+        server.playerManager.Players[playerNum].GetComponent<S3_DeadReckoningInterpolator>().SetTarget( newPos, new Vector2( posDRData.DRVelX, posDRData.DRVelY ) );
 
+        S3_ServerPlayerPosDRData data = new S3_ServerPlayerPosDRData
+        {
+            InitialTime = message.SendTime,
+            PlayerNum = message.PlayerNum,
+            DRPosX = posDRData.DRPosX,
+            DRPosY = posDRData.DRPosY,
+            DRVelX = posDRData.DRVelX,
+            DRVelY = posDRData.DRVelY
+        };
         for(int i = 0; i < server.playerManager.CurrentPlayers; ++i)
         {
             if( i != message.PlayerNum )
             {
-                S3_ServerPlayerPosDRData data = new S3_ServerPlayerPosDRData
-                {
-                    InitialTime = message.SendTime,
-                    PlayerNum = message.PlayerNum,
-                    DRPosX = posDRData.DRPosX,
-                    DRPosY = posDRData.DRPosY,
-                    DRVelX = posDRData.DRVelX,
-                    DRVelY = posDRData.DRVelY
-                };
+
                 S3_GameMessage toSend = new S3_GameMessage
                 {
                     PlayerNum = (byte)i,
@@ -277,7 +277,7 @@ public class S3_HostMessageProcessor : MonoBehaviour {
 
 		else {
 			S3_CombatStateController combatController = server.playerManager.Players [swingingPlayer].GetComponent<S3_CombatStateController> ();
-			combatController.SwingSword ();
+			combatController.SwingSword (1.5f);
 			
 			for (int i = 0; i < server.playerManager.CurrentPlayers; ++i) {
 				if (i != swingingPlayer) {
