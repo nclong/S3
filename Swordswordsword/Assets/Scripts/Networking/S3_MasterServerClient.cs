@@ -117,14 +117,17 @@ public class S3_MasterServerClient
         Receive( client );
         while( receiveDone.WaitOne( 1000 ) )
         {
-            S3_LobbyServerInfo serverInfo = new S3_LobbyServerInfo
+            if( DataResponse.message != null )
             {
-                PlayerCount = Int32.Parse( DataResponse.message.Substring( 0, 1 ) ),
-                ServerName = DataResponse.message.Substring( 1 ),
-                Ip = IntToIpString( DataResponse.responseCode ),
-            };
-            result.Add( serverInfo );
-            Receive( client );
+                S3_LobbyServerInfo serverInfo = new S3_LobbyServerInfo
+        {
+            PlayerCount = Int32.Parse( DataResponse.message.Substring( 0, 1 ) ),
+            ServerName = DataResponse.message.Substring( 1 ),
+            Ip = IntToIpString( DataResponse.responseCode ),
+        };
+                result.Add( serverInfo );
+                Receive( client ); 
+            }
         }
 
         return result;
