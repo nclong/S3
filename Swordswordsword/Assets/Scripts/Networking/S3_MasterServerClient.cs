@@ -124,6 +124,7 @@ public class S3_MasterServerClient
                 Ip = IntToIpString( DataResponse.responseCode ),
             };
             result.Add( serverInfo );
+            Receive( client );
         }
 
         return result;
