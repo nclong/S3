@@ -180,6 +180,6 @@ public class S3client : MonoBehaviour
 
     private void EndClient()
     {
-        Application.Quit();
+        Application.LoadLevel(2);
     }
 }
