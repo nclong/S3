@@ -180,7 +180,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5dfa93cd6912ab48adb6f081f7cf659, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MasterServerIp: 128.195.51.236
+  MasterServerIp: 169.234.244.97
   ServerButtonPrefab: {fileID: 119948, guid: f832a540a1d613f4ea27904410b4cbe3, type: 2}
   UICanvas: {fileID: 1415154423}
   inputField: {fileID: 1245673144}

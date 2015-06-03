@@ -18,6 +18,7 @@ public class StateObject
     public byte[] buffer = new byte[BufferSize];
     // Received data string.
     public StringBuilder sb = new StringBuilder();
+    public S3DataResponse DataResponse = new S3DataResponse();
 
 }
 
@@ -38,6 +39,14 @@ public class S3_MasterServerClient
 
     private static S3DataResponse DataResponse;
 
+    private static string ChatBuffer;
+
+    private static List<S3_LobbyServerInfo> LobbyServers;
+
+    public void ClearLobbyList()
+    {
+        LobbyServers.Clear();
+    }
     
     public void StartClient(string hostIp)
     {
@@ -67,7 +76,7 @@ public class S3_MasterServerClient
 
             //System.Threading.Thread.Sleep( 1000 );
             //// Receive the response from the remote device.
-            //Receive( client );
+            Receive( client );
             //receiveDone.WaitOne();
 
             // Write the response to the console.
@@ -114,24 +123,8 @@ public class S3_MasterServerClient
         InfoJson["passwordHash"].AsInt = 0;
         InfoJson["type"] = "listRequest";
         Send( client, InfoJson.ToString() );
-        Receive( client );
-        while( receiveDone.WaitOne( 1000 ) )
-        {
-            Debug.Log("Receiving Server...");
-            if( DataResponse.message != null )
-            {
-                S3_LobbyServerInfo serverInfo = new S3_LobbyServerInfo
-                {
-                    PlayerCount = Int32.Parse( DataResponse.message.Substring( 0, 1 ) ),
-                    ServerName = DataResponse.message.Substring( 1 ),
-                    Ip = IntToIpString( DataResponse.responseCode ),
-                };
-                result.Add( serverInfo );
-                Receive( client ); 
-            }
-        }
-
-        return result;
+        System.Threading.Thread.Sleep( 2500 );
+        return LobbyServers;
     }
 
     public void SendChatString(string toSend)
@@ -151,9 +144,8 @@ public class S3_MasterServerClient
         HeartbeatJson["passwordHash"].AsInt = 0;
         HeartbeatJson["type"] = "chatHeartbeat";
         Send( client, HeartbeatJson.ToString() );
-        Receive( client );
-        receiveDone.WaitOne( 1000 );
-        return DataResponse.message;
+
+        return ChatBuffer;
     }
 
     public void SendServerClose(string name, int players)
@@ -181,8 +173,9 @@ public class S3_MasterServerClient
         receiveDone.WaitOne(15000);
         Debug.Log("Reply received");
 
-        Debug.Log(String.Format("SBDataResponse = {0}", DataResponse.message));
         return DataResponse;
+        Debug.Log(String.Format("SBDataResponse = {0}", DataResponse.message));
+        
     }
 
     public void StopClient()
@@ -215,6 +208,8 @@ public class S3_MasterServerClient
 
             // Signal that the connection has been made.
             connectDone.Set();
+
+            
         }
         catch( Exception e )
         {
@@ -242,6 +237,31 @@ public class S3_MasterServerClient
         }
     }
 
+
+    private static  void ParseReceive(S3DataResponse response)
+    {
+        if( response.message == "Just some servers" )
+        {
+            //response stuff
+        }
+        else if( response.responseCode == -1 || response.responseCode == 1 ) //Login or register request
+        {
+            DataResponse = response;
+        }
+        else if( response.responseCode == -2 ) //Chat data
+        {
+            ChatBuffer = response.message;
+        }
+        else //It is a server object
+        {
+            LobbyServers.Add(new S3_LobbyServerInfo
+            {
+                Ip = IntToIpString( response.responseCode ),
+                PlayerCount = Int32.Parse( response.message.Substring( 0, 1 ) ),
+                ServerName = response.message.Substring( 1 )
+            });
+        }
+    }
     private static void ReceiveCallback( IAsyncResult ar )
     {
         try
@@ -274,12 +294,13 @@ public class S3_MasterServerClient
                 var s3Response = JSON.Parse(content);
                 if (s3Response["responseCode"] != null )
                 {
-                    DataResponse = new S3DataResponse
+                    state.DataResponse = new S3DataResponse
                     {
                         responseCode = s3Response["responseCode"].AsInt,
                         message = s3Response["message"]
                     };
 
+                    ParseReceive( state.DataResponse );
                     Debug.Log(String.Format("s3Response = {0}", s3Response["message"]));
                     receiveDone.Set();
                 }
@@ -288,6 +309,14 @@ public class S3_MasterServerClient
                     Debug.Log("Failed to parse response!");
                     receiveDone.Set();
                 }
+
+                StateObject newState = new StateObject();
+                state.workSocket = client;
+
+
+                // Begin receiving the data from the remote device.
+                client.BeginReceive( newState.buffer, 0, StateObject.BufferSize, 0,
+                    new AsyncCallback( ReceiveCallback ), newState );
             }
             else
             {

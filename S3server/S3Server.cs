@@ -117,15 +117,27 @@ public class AsynchronousSocketListener
             }
             else if (requestContent.type == "listRequest") //case for client requesting current server list
             {
+                //S3DataResponse serverCount = new S3DataResponse
+                //{
+                //    message = "Just some servers",
+                //    responseCode = serverList.Count
+                //};
+                //Send( myState.workSocket, JsonConvert.SerializeObject( serverCount ) );
+
+
                 foreach (KeyValuePair<string, ServerObject> kvp in serverList)
                 {
+                    StateObject serverStateObject = new StateObject
+                    {
+                        workSocket = myState.workSocket
+                    };
                     S3DataResponse toSend = new S3DataResponse
                     {
                         message = kvp.Value.currentPlayers.ToString() + kvp.Key,
                         responseCode = IpStringToInt(kvp.Value.ipAddress)
                     };
 
-                    Send(myState.workSocket, JsonConvert.SerializeObject(toSend));
+                    Send( serverStateObject.workSocket, JsonConvert.SerializeObject( toSend ) );
                 }
             }
             else if (requestContent.type == "closeServer") //case for host closing server - finished

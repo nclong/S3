@@ -36,6 +36,7 @@ public class S3_LobbyMasterServerManager : MonoBehaviour {
 
     public void OnRefresh()
     {
+        masterServer.ClearLobbyList();
         for(int i = 0; i < UICanvas.transform.childCount; ++i)
         {
             Transform t = UICanvas.transform.GetChild( i );
@@ -50,7 +51,7 @@ public class S3_LobbyMasterServerManager : MonoBehaviour {
         foreach(S3_LobbyServerInfo server in serverList)
         {
             GameObject newButton = Instantiate<GameObject>( ServerButtonPrefab );
-            newButton.transform.parent = UICanvas.transform;
+            newButton.transform.SetParent( UICanvas.transform, false );
             newButton.transform.position = new Vector3( newButton.transform.position.x, -19 - buttonOffset * 38 );
 
             buttonOffset += 1;
