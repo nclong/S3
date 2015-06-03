@@ -82,6 +82,24 @@ public class S3_MasterServerClient
         }
     }
 
+    public void SendServerUpdate(string name, int players, string ip)
+    {
+        JSONClass InfoJson = new JSONClass();
+        InfoJson["UserName"] = name;
+        InfoJson["passwordHash"].AsInt = players;
+        InfoJson["type"] = ip;
+        Send( client, InfoJson.ToString() );
+    }
+
+    public void SendServerClose(string name, int players)
+    {
+        JSONClass CloseJson = new JSONClass();
+        CloseJson["UserName"] = name;
+        CloseJson["passwordHash"].AsInt = players;
+        CloseJson["type"] = "closeServer";
+        Send( client, CloseJson.ToString() );
+    }
+
     public S3DataResponse AttemptLoginOrRegister(S3DataRequet request)
     {
         StateObject sb;
@@ -105,6 +123,7 @@ public class S3_MasterServerClient
         try
         {
             client.Shutdown( SocketShutdown.Both );
+            client.Close();
         }
         catch( SocketException e )
         {
