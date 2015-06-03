@@ -168,7 +168,7 @@ public class S3_MasterServerClient
         jRequest["type"] = request.type;
         Send( client, jRequest.ToString() );
 
-        Receive( client);
+        //Receive( client);
         Debug.Log("Waiting for reply");
         receiveDone.WaitOne(15000);
         Debug.Log("Reply received");
@@ -311,7 +311,7 @@ public class S3_MasterServerClient
                 }
 
                 StateObject newState = new StateObject();
-                state.workSocket = client;
+                newState.workSocket = client;
 
 
                 // Begin receiving the data from the remote device.
