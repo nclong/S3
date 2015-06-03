@@ -143,7 +143,7 @@ public class S3_MasterServerClient
         JSONClass HeartbeatJson = new JSONClass();
         HeartbeatJson["UserName"] = string.Empty;
         HeartbeatJson["passwordHash"].AsInt = 0;
-        HeartbeatJson["type"] = "chatHeartbeeat";
+        HeartbeatJson["type"] = "chatHeartbeat";
         Send( client, HeartbeatJson.ToString() );
         Receive( client );
         receiveDone.WaitOne( 1000 );
