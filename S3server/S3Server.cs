@@ -21,8 +21,8 @@ public class StateObject
 
 public class ServerObject
 {
-    int currentPlayers;
-    string ipAddress;
+    public int currentPlayers;
+    public string ipAddress;
 }
 
 public class AsynchronousSocketListener
@@ -74,34 +74,61 @@ public class AsynchronousSocketListener
             //Porbably a bad idea
 
             content = myState.sb.ToString();
-            //this is where we parse the string to see if it's login request vs a server update request vs server join request
-
-            if (false) //case for login/register request
-            {
-                //do things as normal
-            }
-            else if (myState.sb.GetType() = 'join') //case for join server
-            {
-                //send ip address of the requested server to the client
-                if (serverList[name.toString()])
-                {
-                    sendToClient(serverList[name.toString()]);
-                }
-                else printError();
-            }
-            else //case for server update
-            {
-                //if the server to be created exists or if the server to be updated doesn't exist throw error
-            }
 
             S3DataRequest requestContent = JsonConvert.DeserializeObject<S3DataRequest>(content);
+
+            //this is where we parse the string to see if it's login request vs a server update request vs server join request
+
+            if (requestContent.type == "login" || requestContent.type == "register") //case for login/register request
+            {
+                //do things as normal
+                Send(myState.workSocket, JsonConvert.SerializeObject(HandleDataRequest(requestContent)));
+            }
+            else if (requestContent.type == "join") //case for join server
+            {
+                //send ip address of the requested server to the client
+                if (serverList.ContainsKey(requestContent.UserName))
+                {
+                    //sendToClient(serverList[name.toString()]);
+                }
+                //else printError();
+            }
+            else if (requestContent.type == "listRequest") //case for client requesting current server list
+            {
+                foreach (ServerObject serverObject in serverList.Values)
+                {
+                    //send server info to clients
+                }
+            }
+            else if (requestContent.type == "closeServer") //case for host closing server
+            {
+                serverList.Remove(requestContent.UserName);
+            }
+            else //case for new server created + heartbeat updates
+            {
+                //check to see if dictionary has the key
+                if (serverList.ContainsKey(requestContent.UserName) && serverList[requestContent.UserName].ipAddress == requestContent.type) //For server updates
+                {
+                    //do updates here
+                    serverList[requestContent.UserName].currentPlayers = requestContent.passwordHash;
+                }
+                else if (!serverList.ContainsKey(requestContent.UserName)) //for server creation and server doesn't exist already
+                {
+                    serverList[requestContent.UserName] = new ServerObject
+                    {
+                        currentPlayers = requestContent.passwordHash,
+                        ipAddress = requestContent.type
+                    };
+                }
+            }
+
+            
             // All the data has been read from the 
             // client. Display it on the console.
             Console.WriteLine("Read {0} bytes from socket. \n Data : {1}",
                 content.Length, content);
             Console.WriteLine("\n\n");
 
-            Send(myState.workSocket, JsonConvert.SerializeObject(HandleDataRequest(requestContent)));
             myState.buffer = new byte[1024];
             myState.sb = new StringBuilder();
         }
