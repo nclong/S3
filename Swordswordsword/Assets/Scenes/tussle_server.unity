@@ -487,7 +487,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ServerPlayerManagerObj: {fileID: 1849472080}
   playerManager: {fileID: 0}
-  MasterServerIp: 128.195.51.236
+  MasterServerIp: 127.0.0.1
   InfoUpdateTick: 1
   InfoUpdateTimer: 0
 --- !u!4 &400827991

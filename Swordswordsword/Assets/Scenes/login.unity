@@ -582,7 +582,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2a3f09e634910446a2e6edc6ed920a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MasterServerIP: 128.195.51.236
+  MasterServerIP: 127.0.0.1
   StatusText: {fileID: 1232904499}
   UserNameField: {fileID: 1627491423}
   PasswordField: {fileID: 212755563}

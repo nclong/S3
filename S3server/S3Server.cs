@@ -121,7 +121,7 @@ public class AsynchronousSocketListener
                 {
                     S3DataResponse toSend = new S3DataResponse
                     {
-                        message = kvp.Key,
+                        message = kvp.Value.currentPlayers.ToString() + kvp.Key,
                         responseCode = IpStringToInt(kvp.Value.ipAddress)
                     };
 
