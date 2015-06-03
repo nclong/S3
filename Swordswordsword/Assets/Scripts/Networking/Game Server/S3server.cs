@@ -42,7 +42,7 @@ public class S3server : MonoBehaviour
     public string MasterServerIp;
     S3_MasterServerClient masterServer = new S3_MasterServerClient();
 
-    public float InfoUpdateTick = 1000;
+    public float InfoUpdateTick = 1f;
     public float InfoUpdateTimer = 0f;
 
     private string ThisServerIPString;
@@ -80,6 +80,8 @@ public class S3server : MonoBehaviour
         receiveQ = new S3_MessagesQueue();
         toSendQ = new S3_MessagesQueue();
 
+  
+
         S3_StateObject state = new S3_StateObject()
         {
             socket = newsock,
@@ -88,6 +90,7 @@ public class S3server : MonoBehaviour
         newsock.BeginReceive(new AsyncCallback(ReceiveCallback), state);
    
     }
+
 
     void Update()
     {

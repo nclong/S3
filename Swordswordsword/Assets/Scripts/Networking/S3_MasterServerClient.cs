@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -82,6 +83,20 @@ public class S3_MasterServerClient
         }
     }
 
+    private static int IpStringToInt( string ip )
+    {
+        IPAddress ipAddr = IPAddress.Parse( ip );
+        byte[] ipBytes = ipAddr.GetAddressBytes();
+        return BitConverter.ToInt32( ipBytes, 0 );
+    }
+
+    private static string IntToIpString( int ipInt )
+    {
+        byte[] ipBytes = BitConverter.GetBytes( ipInt );
+        IPAddress ip = new IPAddress( ipBytes );
+        return ip.ToString();
+    }
+
     public void SendServerUpdate(string name, int players, string ip)
     {
         JSONClass InfoJson = new JSONClass();
@@ -91,6 +106,50 @@ public class S3_MasterServerClient
         Send( client, InfoJson.ToString() );
     }
 
+    public List<S3_LobbyServerInfo> RequestServerList()
+    {
+        List<S3_LobbyServerInfo> result = new List<S3_LobbyServerInfo>();
+        JSONClass InfoJson = new JSONClass();
+        InfoJson["UserName"] = string.Empty;
+        InfoJson["passwordHash"].AsInt = 0;
+        InfoJson["type"] = "listRequest";
+        Send( client, InfoJson.ToString() );
+        Receive( client );
+        while( receiveDone.WaitOne( 1000 ) )
+        {
+            S3_LobbyServerInfo serverInfo = new S3_LobbyServerInfo
+            {
+                PlayerCount = Int32.Parse( DataResponse.message.Substring( 0, 1 ) ),
+                ServerName = DataResponse.message.Substring( 1 ),
+                Ip = IntToIpString( DataResponse.responseCode ),
+            };
+            result.Add( serverInfo );
+        }
+
+        return result;
+    }
+
+    public void SendChatString(string toSend)
+    {
+        JSONClass ChatJson = new JSONClass();
+        ChatJson["UserName"] = toSend;
+        ChatJson["passwordHash"].AsInt = toSend.Length;
+        ChatJson["type"] = "chatMessage";
+        Send( client, ChatJson.ToString() );
+    }
+
+    public string SendChatHeartBeat()
+    {
+        JSONClass HeartbeatJson = new JSONClass();
+        HeartbeatJson["UserName"] = string.Empty;
+        HeartbeatJson["passwordHash"].AsInt = 0;
+        HeartbeatJson["type"] = "chatHeartbeeat";
+        Send( client, HeartbeatJson.ToString() );
+        Receive( client );
+        receiveDone.WaitOne( 1000 );
+        return DataResponse.message;
+    }
+
     public void SendServerClose(string name, int players)
     {
         JSONClass CloseJson = new JSONClass();
@@ -98,6 +157,8 @@ public class S3_MasterServerClient
         CloseJson["passwordHash"].AsInt = players;
         CloseJson["type"] = "closeServer";
         Send( client, CloseJson.ToString() );
+
+
     }
 
     public S3DataResponse AttemptLoginOrRegister(S3DataRequet request)
