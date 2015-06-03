@@ -30,7 +30,7 @@ public class S3_CombatStateController : MonoBehaviour {
     public void SwingSword(float offset)
     {
         AnimatorStateInfo info = swordAnimator.GetCurrentAnimatorStateInfo( 0 );
-        float ServerTimeToFinish = SwordSwingClip.length * 1.5f;
+        float ServerTimeToFinish = SwordSwingClip.length;
         float localTimeToFinish = ServerTimeToFinish + offset;
         float localSpeed = localTimeToFinish / SwordSwingClip.length;
         swordAnimator.speed = localSpeed;
