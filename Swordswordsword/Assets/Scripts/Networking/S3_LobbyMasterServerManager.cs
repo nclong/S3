@@ -52,8 +52,9 @@ public class S3_LobbyMasterServerManager : MonoBehaviour {
         {
             GameObject newButton = Instantiate<GameObject>( ServerButtonPrefab );
             newButton.transform.SetParent( UICanvas.transform, false );
-            newButton.transform.position = new Vector3( newButton.transform.position.x, -19 - buttonOffset * 38 );
-
+            newButton.transform.localPosition = new Vector3( newButton.transform.localPosition.x, -19 - buttonOffset * 38 );
+            S3_ServerButton buttonInfo = newButton.GetComponent<S3_ServerButton>();
+            buttonInfo.SetInfo( server.ServerName, server.PlayerCount, server.Ip );
             buttonOffset += 1;
         }
     }

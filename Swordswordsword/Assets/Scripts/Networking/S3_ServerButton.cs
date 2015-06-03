@@ -5,8 +5,8 @@ using System.Collections;
 public class S3_ServerButton : MonoBehaviour {
 
     private Button button;
-    private Text ServerNameText;
-    private Text PlayerCountText;
+    public Text ServerNameText;
+    public Text PlayerCountText;
     private string IP;
 
     void Start()
