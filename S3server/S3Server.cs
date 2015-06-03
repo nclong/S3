@@ -100,7 +100,7 @@ public class AsynchronousSocketListener
 
             //this is where we parse the string to see if it's login request vs a server update request vs server join request
 
-            if (requestContent.type == "login" || requestContent.type == "register") //case for login/register request - finished
+            if (requestContent.type == "Login" || requestContent.type == "Register") //case for login/register request - finished
             {
                 //do things as normal
                 Send(myState.workSocket, JsonConvert.SerializeObject(HandleDataRequest(requestContent)));
@@ -117,10 +117,15 @@ public class AsynchronousSocketListener
             }
             else if (requestContent.type == "listRequest") //case for client requesting current server list
             {
-                foreach (ServerObject serverObject in serverList.Values)
+                foreach (KeyValuePair<string, ServerObject> kvp in serverList)
                 {
-                    //send server info to clients
-                    //Send(myState.workSocket, JsonConvert.SerializeObject(HandleDataRequest(requestContent))); <--- THIS NEEDS TO BE CHANGED, this is a copy-pasta, not tailored to this function
+                    S3DataResponse toSend = new S3DataResponse
+                    {
+                        message = kvp.Key,
+                        responseCode = IpStringToInt(kvp.Value.ipAddress)
+                    };
+
+                    Send(myState.workSocket, JsonConvert.SerializeObject(toSend));
                 }
             }
             else if (requestContent.type == "closeServer") //case for host closing server - finished
