@@ -4,7 +4,7 @@ using System.Collections;
 public class S3_DeadReckoningInterpolator : MonoBehaviour {
     public float TimeToReckon = 0.5f;
     public float TargetReachedTreshold = 0.1f;
-    public float DesyncAdjustmentThreshold = 10f;
+    public float DesyncAdjustmentThreshold = 20f;
 
     private bool reckoning = false;
     private Vector3 target;
@@ -31,11 +31,19 @@ public class S3_DeadReckoningInterpolator : MonoBehaviour {
 
     public void SetTarget(Vector3 actualCurrentPos, Vector2 actualCurrentVel)
     {
-        reckoning = true;
-        realVelocity = actualCurrentVel;
-        target = actualCurrentPos + new Vector3(realVelocity.x, realVelocity.y) * TimeToReckon;
-        Vector3 reckoningVelocity3 = ( ( target - transform.position ) / TimeToReckon );
-        reckoningVelocity = reckoningVelocity3;
-        rb2D.velocity = reckoningVelocity;
+        if( Vector3.Distance( actualCurrentPos, transform.position ) >= DesyncAdjustmentThreshold )
+        {
+            transform.position = actualCurrentPos;
+            rb2D.velocity = actualCurrentVel;
+        }
+        else
+        {
+            reckoning = true;
+            realVelocity = actualCurrentVel;
+            target = actualCurrentPos + new Vector3( realVelocity.x, realVelocity.y ) * TimeToReckon;
+            Vector3 reckoningVelocity3 = ( ( target - transform.position ) / TimeToReckon );
+            reckoningVelocity = reckoningVelocity3;
+            rb2D.velocity = reckoningVelocity; 
+        }
     }
 }
