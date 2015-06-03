@@ -117,7 +117,7 @@ public class S3_MasterServerClient
         Receive( client );
         while( receiveDone.WaitOne( 1000 ) )
         {
-            Debug.("Receiving Server...");
+            Debug.Log("Receiving Server...");
             if( DataResponse.message != null )
             {
                 S3_LobbyServerInfo serverInfo = new S3_LobbyServerInfo
