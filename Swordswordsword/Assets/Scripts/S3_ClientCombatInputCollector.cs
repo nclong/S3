@@ -26,7 +26,6 @@ public class S3_ClientCombatInputCollector : MonoBehaviour {
                 combatController.SwingSword( currentLatency );
 			S3_ClientSwingData swingData = new S3_ClientSwingData
         	{
-        	animateSpeed = 1.0f
         	};
 				S3_GameMessage swingMessage = new S3_GameMessage
         	{

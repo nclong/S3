@@ -68,11 +68,6 @@ public class S3server : MonoBehaviour
 
     void FixedUpdate()
     {
-        //Receive Messages
-
-        //Move to the callback
-
-        //SendMessages if there are any
         SendMessages();
         ReadMessages();
 		SendTimeUpdates ();
