@@ -131,6 +131,7 @@ public class S3_MasterServerClient
 
     public void SendChatString(string toSend)
     {
+        //Debug.Log( "Sending chat string: " + toSend );
         JSONClass ChatJson = new JSONClass();
         ChatJson["UserName"] = toSend;
         ChatJson["passwordHash"].AsInt = toSend.Length;
@@ -266,7 +267,7 @@ public class S3_MasterServerClient
                 
                 string content = state.sb.ToString();
                 var s3Response = JSON.Parse(content);
-                if (s3Response["responseCode"] != null && s3Response["message"] != null)
+                if (s3Response["responseCode"] != null )
                 {
                     DataResponse = new S3DataResponse
                     {

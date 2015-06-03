@@ -60,5 +60,7 @@ public class S3_LobbyMasterServerManager : MonoBehaviour {
     public void OnChatSend()
     {
         string toSend = PlayerPrefs.GetString( "PlayerName" ) + ": " + inputField.text;
+        masterServer.SendChatString( toSend );
+        inputField.text = string.Empty;
     }
 }
