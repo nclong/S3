@@ -44,8 +44,29 @@ public class AsynchronousSocketListener
     IPEndPoint localEndPoint;
     public static IPEndPoint any;
 
+    //our serverlist dictionary
     static Dictionary<string, ServerObject> serverList;
-    
+
+    //chat buffer so it all stays in one packet
+    static string chatBuffer = "";
+
+    //chat response object
+    static S3DataResponse chatBufferObject = new S3DataResponse();
+
+    private static int IpStringToInt(string ip)
+    {
+        IPAddress ipAddr = IPAddress.Parse(ip);
+        byte[] ipBytes = ipAddr.GetAddressBytes();
+        return BitConverter.ToInt32(ipBytes, 0);
+    }
+
+    private static string IntToIpString(int ipInt)
+    {
+        byte[] ipBytes = BitConverter.GetBytes(ipInt);
+        IPAddress ip = new IPAddress(ipBytes);
+        return ip.ToString();
+    }
+
     //test function
     public static void listenLoop(object o)
     {
@@ -79,17 +100,18 @@ public class AsynchronousSocketListener
 
             //this is where we parse the string to see if it's login request vs a server update request vs server join request
 
-            if (requestContent.type == "login" || requestContent.type == "register") //case for login/register request
+            if (requestContent.type == "login" || requestContent.type == "register") //case for login/register request - finished
             {
                 //do things as normal
                 Send(myState.workSocket, JsonConvert.SerializeObject(HandleDataRequest(requestContent)));
             }
-            else if (requestContent.type == "join") //case for join server
+            else if (requestContent.type == "join") //case for join server - maybe finished? Nick needs to doublecheck
             {
                 //send ip address of the requested server to the client
                 if (serverList.ContainsKey(requestContent.UserName))
                 {
-                    //sendToClient(serverList[name.toString()]);
+                    //send IP address of requested server to the requesting client
+                    Send(myState.workSocket, JsonConvert.SerializeObject(IpStringToInt(serverList[requestContent.UserName].ipAddress)));
                 }
                 //else printError();
             }
@@ -98,13 +120,43 @@ public class AsynchronousSocketListener
                 foreach (ServerObject serverObject in serverList.Values)
                 {
                     //send server info to clients
+                    //Send(myState.workSocket, JsonConvert.SerializeObject(HandleDataRequest(requestContent))); <--- THIS NEEDS TO BE CHANGED, this is a copy-pasta, not tailored to this function
                 }
             }
-            else if (requestContent.type == "closeServer") //case for host closing server
+            else if (requestContent.type == "closeServer") //case for host closing server - finished
             {
                 serverList.Remove(requestContent.UserName);
             }
-            else //case for new server created + heartbeat updates
+            else if (requestContent.type == "chatHeartbeat") //case for sending host the chat buffer - maybe finished? Needs to be double checked
+            {
+                //set the object which we will send to have the chat log as it's message
+                chatBufferObject.message = chatBuffer;
+
+                //set response code to -2
+                chatBufferObject.responseCode = -2;
+
+                //send chat buffer object
+                Send(myState.workSocket, JsonConvert.SerializeObject(chatBufferObject));
+            }
+            else if (requestContent.type == "chatMessage") //case for player sending chat - maybe finished?
+            {
+                if (chatBuffer.Length + requestContent.passwordHash > 950) //if adding this message pushes the buffer over 950 characters then we need to subtract messages until it's under 950 with this message added
+                {
+                    //determine how many letters to remove
+                    int overflow = (chatBuffer.Length + requestContent.passwordHash) - 950;
+
+                    //peek next char to see if it's \n and if so remove it too
+                    if (chatBuffer[overflow] == '\n') // might be irrelevant if 950 chars never reaches top of screen anyway
+                    {
+                        chatBuffer = chatBuffer.Substring(overflow);
+                    }
+                    else chatBuffer = chatBuffer.Substring(overflow - 1); //since we start at index 0 need to subtract 1
+                }
+
+                //actually append the chat message to the end of the buffer
+                chatBuffer += requestContent.UserName;
+            }
+            else //case for new server created + heartbeat updates - maybe finished?
             {
                 //check to see if dictionary has the key
                 if (serverList.ContainsKey(requestContent.UserName) && serverList[requestContent.UserName].ipAddress == requestContent.type) //For server updates
@@ -330,6 +382,7 @@ public class AsynchronousSocketListener
         //clear the console
         Console.Clear();
 
+        //write the menu
         Console.WriteLine("----------------------------------------------------");
         Console.WriteLine("           Sword Sword Sword Server!");
         Console.WriteLine("----------------------------------------------------");
