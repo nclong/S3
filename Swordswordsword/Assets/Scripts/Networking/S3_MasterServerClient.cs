@@ -53,6 +53,7 @@ public class S3_MasterServerClient
         // Connect to a remote device.
         try
         {
+            LobbyServers = new List<S3_LobbyServerInfo>();
             client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             // Establish the remote endpoint for the socket.
             // The name of the 
