@@ -487,6 +487,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ServerPlayerManagerObj: {fileID: 1849472080}
   playerManager: {fileID: 0}
+  InfoUpdateTick: 1000
+  InfoUpdateTimer: 0
 --- !u!4 &400827991
 Transform:
   m_ObjectHideFlags: 0

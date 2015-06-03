@@ -441,7 +441,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TimeToReckon: .5
-  TargetReachedTreshold: .100000001
+  TargetReachedTreshold: .300000012
 --- !u!114 &11412736
 MonoBehaviour:
   m_ObjectHideFlags: 1

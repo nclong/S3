@@ -16,6 +16,8 @@ public class S3_StateObject
     public byte[] buffer = new byte[BufferSize];
     public S3_GameMessage message = new S3_GameMessage();
     public IPEndPoint endPoint = null;
+    
+
 }
 
 public class S3server : MonoBehaviour
@@ -33,15 +35,23 @@ public class S3server : MonoBehaviour
 
     public GameObject ServerPlayerManagerObj;
     public S3_ServerPlayerManager playerManager;
+    private S3_GameManager gameManager;
 
     S3_HostMessageProcessor messageProcessor;
 
+    public string MasterServerIp;
+    S3_MasterServerClient masterServer = new S3_MasterServerClient();
 
+    public float InfoUpdateTick = 1000;
+    public float InfoUpdateTimer = 0f;
 
     void Start()
     {
         messageProcessor = GetComponent<S3_HostMessageProcessor>();
         playerManager = ServerPlayerManagerObj.GetComponent<S3_ServerPlayerManager>();
+        gameManager = ServerPlayerManagerObj.GetComponent<S3_GameManager>();
+
+        masterServer.StartClient( MasterServerIp );
 
         data = new byte[1024];
         ep = new IPEndPoint(IPAddress.Any, 3500);
@@ -63,16 +73,38 @@ public class S3server : MonoBehaviour
 
     void Update()
     {
-        
+
+        InfoUpdateTimer += Time.deltaTime;
+        if(InfoUpdateTimer  >= InfoUpdateTick )
+        {
+            //Send info to clients
+            S3_ServerPlayerInfoData data = new S3_ServerPlayerInfoData
+            {
+                scores = gameManager.PlayerScores
+            };
+            data.pings = new float[4];
+            for( int i = 0; i < playerManager.CurrentPlayers; ++i )
+            {
+                data.pings[i] = playerManager.Latencies[i].GetMeanF();
+            }
+            for( int i = 0; i < playerManager.CurrentPlayers; ++ i )
+            {
+                S3_GameMessage message = new S3_GameMessage
+                {
+                    MessageType = S3_GameMessageType.ServerPlayerInfo,
+                    MessageData = data,
+                    SendTime = Time.time,
+                    PlayerNum = (byte)i
+                };
+            }
+                
+                //Send info to login server
+                InfoUpdateTimer = 0f;
+        }
     }
 
     void FixedUpdate()
     {
-        //Receive Messages
-
-        //Move to the callback
-
-        //SendMessages if there are any
         SendMessages();
         ReadMessages();
 		SendTimeUpdates ();
