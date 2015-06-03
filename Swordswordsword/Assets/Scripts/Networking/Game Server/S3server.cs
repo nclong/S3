@@ -45,11 +45,29 @@ public class S3server : MonoBehaviour
     public float InfoUpdateTick = 1000;
     public float InfoUpdateTimer = 0f;
 
+    private string ThisServerIPString;
+
     void Start()
     {
+        if( !PlayerPrefs.HasKey("ServerName") )
+        {
+            PlayerPrefs.SetString( "ServerName", "de_dust 24/7" );
+            PlayerPrefs.Save();
+        }
+
         messageProcessor = GetComponent<S3_HostMessageProcessor>();
         playerManager = ServerPlayerManagerObj.GetComponent<S3_ServerPlayerManager>();
         gameManager = ServerPlayerManagerObj.GetComponent<S3_GameManager>();
+
+        string url = "http://checkip.dyndns.org";
+        WebRequest req = System.Net.WebRequest.Create( url );
+        WebResponse resp = req.GetResponse();
+        StreamReader sr = new System.IO.StreamReader( resp.GetResponseStream() );
+        string response = sr.ReadToEnd().Trim();
+        string[] a = response.Split( ':' );
+        string a2 = a[1].Substring( 1 );
+        string[] a3 = a2.Split( '<' );
+        ThisServerIPString = a3[0];
 
         masterServer.StartClient( MasterServerIp );
 
@@ -98,8 +116,9 @@ public class S3server : MonoBehaviour
                 };
             }
                 
-                //Send info to login server
-                InfoUpdateTimer = 0f;
+            //Send info to login server
+            masterServer.SendServerUpdate( PlayerPrefs.GetString( "ServerName" ), playerManager.CurrentPlayers, ThisServerIPString );
+            InfoUpdateTimer = 0f;
         }
     }
 
@@ -202,6 +221,12 @@ public class S3server : MonoBehaviour
         }
 
 
+    }
+    
+    void OnApplicationQuit()
+    {
+        masterServer.SendServerClose( PlayerPrefs.GetString( "ServerName" ), playerManager.CurrentPlayers );
+        masterServer.StopClient();
     }
 }
 
