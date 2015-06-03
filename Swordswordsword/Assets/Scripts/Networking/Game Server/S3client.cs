@@ -42,6 +42,11 @@ public class S3client : MonoBehaviour
         player = new UdpClient(3501);
 
         byte[] gamePlayData = new byte[1024];
+
+        if( PlayerPrefs.HasKey("HostIP"))
+        {
+            HostIP = PlayerPrefs.HasKey( "HostIP" );
+        }
         HostEndPoint = new IPEndPoint( IPAddress.Parse( HostIP ), 3500 );
 
         try
