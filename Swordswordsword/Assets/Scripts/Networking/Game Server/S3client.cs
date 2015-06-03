@@ -45,7 +45,7 @@ public class S3client : MonoBehaviour
 
         if( PlayerPrefs.HasKey("HostIP"))
         {
-            HostIP = PlayerPrefs.HasKey( "HostIP" );
+            HostIP = PlayerPrefs.GetString( "HostIP" );
         }
         HostEndPoint = new IPEndPoint( IPAddress.Parse( HostIP ), 3500 );
 
