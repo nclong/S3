@@ -72,7 +72,7 @@ public class S3_MiscController : MonoBehaviour {
                     for (int i = 0; i < cPlayerManager.CurrentPlayers; ++i)
                     {
                         Names[i].text = cPlayerManager.PlayerNames[i];
-                        Scores[i].text = cPlayerManager.GetComponent<S3_GameManager>().PlayerScores[i].ToString();
+                        Scores[i].text = cPlayerManager.Scores[i].ToString();
                         Lag[i].text = cPlayerManager.GetPing(i).ToString();
                     }
                     ScoreBoard.alpha = 1.0f;

@@ -47,6 +47,11 @@ public class S3client : MonoBehaviour
         {
             HostIP = PlayerPrefs.GetString( "HostIP" );
         }
+
+        if( PlayerPrefs.HasKey("PlayerName"))
+        {
+            PlayerName = PlayerPrefs.GetString( "PlayerName" );
+        }
         HostEndPoint = new IPEndPoint( IPAddress.Parse( HostIP ), 3500 );
 
         try
